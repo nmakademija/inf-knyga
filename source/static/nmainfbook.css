@@ -1,0 +1,17 @@
+/**
+ * Includes few fixes for the classic Sphinx theme.
+ */
+
+@import url("alabaster.css");
+
+/**
+ * Adjust width of the search button to fit Lithuanian translation.
+ */
+
+div.sphinxsidebar #searchbox input[type="text"] {
+    width: 140px;
+}
+
+div.sphinxsidebar #searchbox input[type="submit"] {
+    width: 60px;
+}
