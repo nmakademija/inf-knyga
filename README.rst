@@ -9,9 +9,8 @@ Knygos istoriją ir licenciją rasite faile ``source/LICENSE.rst``.
 Norintiems prisidėti
 ====================
 
-Kompiliavimas Unix sistemoje:
+Kompiliavimas Unix sistemoje::
 
-::
     git clone https://github.com/nmakademija/inf-knyga.git
     cd inf-knyga
     make
