@@ -335,7 +335,7 @@ važiavimų trukmės: 2:44 ir 21:07.
   iliustracija būtų aiškesnė, vietoj važiavimo trukmių nurodyti
   atvykimo laikai (nė vienas reisas netrunka ilgiau nei parą)
 
-Šiuos maršrutus atitinkantis grafas pateiktas :num:`img-10-80d`
+Šiuos maršrutus atitinkantis grafas pateiktas :numref:`img-10-80d`
 paveiksle. Tarkime,
 Filijas Fogas pradeda kelionę iš antrojo miesto. Jis anksčiausiai
 sugrįš namo, jei stotyje lauks iki ryto ir 5:35 išvyks į penktąjį

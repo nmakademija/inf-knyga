@@ -73,7 +73,7 @@ prasideda) **Oilerio keliais**.
 Nėra sudėtinga Karaliaučiaus tiltų atveju įrodyti, kad neegzistuoja
 Oilerio ciklas. Prisiminkime, kaip atrodė grafas, kurio viršūnės –
 Karaliaučiaus salos ir krantai, o briaunos – juos jungiantys tiltai
-(:num:`img-8-karaliauciaus-grafas` pav.).
+(:numref:`img-8-karaliauciaus-grafas` pav.).
 
 Ieškome maršruto, kuris kiekviena briauna pereitų vieną kartą.
 Panagrinėjus kurią nors vieną viršūnę, nesunku pastebėti, jog

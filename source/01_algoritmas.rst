@@ -174,7 +174,7 @@ sudėtingumas yra :math:`O(f(n))` (rašome :math:`g(n) = O(f(n))`),
 jei egzistuoja tokie skaičiai :math:`c` ir :math:`n_0`, su kuriais visiems
 :math:`n > n_0` galioja nelygybės: :math:`0 \le g(n) \le c \cdot f(n)`.
 
-Geriau suprasti šį apibrėžimą padės :num:`img-1-grafikai`
+Geriau suprasti šį apibrėžimą padės :numref:`img-1-grafikai`
 paveiksle pateikti funkcijų :math:`f` ir :math:`g` grafikai.
 
 .. _img-1-grafikai:

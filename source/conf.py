@@ -340,6 +340,8 @@ epub_exclude_files = ['search.html']
 # If false, no index is generated.
 #epub_use_index = True
 
+numfig = True
+
 def setup(app):
     from unicode_pascal import UnicodeDelphiLexer
     lexer = UnicodeDelphiLexer()

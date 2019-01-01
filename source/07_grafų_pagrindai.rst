@@ -77,7 +77,7 @@ daugybe skirtingų būdų.
 
 Matematiškai grafas apibrėžiamas kaip dviejų aibių – viršūnių
 ir briaunų – rinkinys: :math:`G = (V, B)`. Briaunų aibės
-elementai – tai viršūnių poros. Pavyzdžiui, :num:`img-7-grafas02`
+elementai – tai viršūnių poros. Pavyzdžiui, :numref:`img-7-grafas02`
 pav. pavaizduotą
 grafą atitinka tokios viršūnių ir briaunų aibės:
 :math:`V = \{a, b, c, d, e, f, g\}`,
@@ -203,7 +203,7 @@ skiriama beveik tuščiam masyvui, neefektyviai išnaudojama.
   :width: 300px
   :alt: Kaimynystės matrica pavaizduotas img-7-grafas01 pav. grafas
 
-  Kaimynystės matrica pavaizduotas :num:`img-7-grafas01` grafas; juodi
+  Kaimynystės matrica pavaizduotas :numref:`img-7-grafas01` grafas; juodi
   langeliai žymi grafo briaunas
 
 Kai grafe briaunų daug (grafas **tankus**), tai šis paprastas
@@ -267,7 +267,7 @@ kaimynių sąrašą, ieškant antrosios.
   :width: 300px
   :alt: img-7-grafas01 paveikslo grafas pavaizduotas kaimynystės sąrašais
 
-  Taip atrodys :num:`img-7-grafas01` paveikslo grafas, jį pavaizdavus
+  Taip atrodys :numref:`img-7-grafas01` paveikslo grafas, jį pavaizdavus
   kaimynystės sąrašais
 
 Kurį iš aptartų vaizdavimo būdų pasirinkti? Tai priklauso nuo

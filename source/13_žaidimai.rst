@@ -264,7 +264,7 @@ Paanalizuokime konkretų uždavinį:
 
 Analizuosime žaidimą Lošimas disku, kai, pavyzdžiui, :math:`m = 13`.
 
-:num:`img-13-medis`
+:numref:`img-13-medis`
 paveiksle pateiktas pilnas žaidimo medis. Medis turi 9 lygius –
 tai reiškia, kad galimi ne daugiau kaip 9 ėjimai. Bet kurią žaidimo
 poziciją nusako pora :math:`(s, d)`, kur :math:`s` – bendra abiems
@@ -310,7 +310,7 @@ Pasukęs diską, jis gali arba atsukti vienetą ir pakliūti į
 laiminčią pirmojo žaidėjo poziciją, arba atsukti trejetą ir
 laimėti pats. Žinoma, žaisdamas optimaliai, jis atsuks trejetą.
 Taigi ši pozicija yra pralaiminti pirmojo žaidėjo pozicija
-(:num:`img-13-medis2` pav.)
+(:numref:`img-13-medis2` pav.)
 
 .. _img-13-medis2:
 
@@ -326,7 +326,7 @@ Taigi ši pozicija yra pralaiminti pirmojo žaidėjo pozicija
 tarp pozicijų, į kurias žaidėjas (nesvarbu kuris) gali pakliūti
 atlikęs ėjimą, yra **nors viena laiminti** to žaidėjo atžvilgiu,
 tai tas žaidėjas būtinai ją ir rinksis
-(:num:`img-13-medis3` pav.).
+(:numref:`img-13-medis3` pav.).
 
 .. _img-13-medis3:
 
@@ -344,7 +344,7 @@ tai tas žaidėjas būtinai ją ir rinksis
 
 Likusios pozicijos lipant medžiu aukštyn analogiškai suskirstomos į
 laiminčias ir pralaiminčias pirmojo žaidėjo pozicijas
-(žr. :num:`img-13-medis4` pav.).
+(žr. :numref:`img-13-medis4` pav.).
 
 .. _img-13-medis4:
 
@@ -353,7 +353,7 @@ laiminčias ir pralaiminčias pirmojo žaidėjo pozicijas
   :width: 600px
   :alt: Žaidimo medis.
 
-  Tas pats žaidimo medis kaip ir :num:`img-13-medis` pav., tik
+  Tas pats žaidimo medis kaip ir :numref:`img-13-medis` pav., tik
   visos pozicijos
   suskirstytos į laiminčias ir pralaiminčias pirmajam žaidėjui;
   pralaiminčios pirmojo žaidėjo pozicijos pažymėtos juodai; matome,
@@ -689,7 +689,7 @@ Alfa-Beta atkirtimas
 ėjimai, o jų kiekis, ieškant gilyn, auga eksponentiškai. Tačiau ar
 būtina išanalizuoti visus galimus ėjimus ir rasti kiekvieno ėjimo
 (tiksliau pozicijos, į kurią pakliūvama atlikus tą ėjimą)
-įvertį? Panagrinėkime :num:`img-13-medis5` paveiksle pateiktą
+įvertį? Panagrinėkime :numref:`img-13-medis5` paveiksle pateiktą
 situaciją.
 
 .. _img-13-medis5:
@@ -729,7 +729,7 @@ jis gali parinkti tokią ėjimų seką, kad nesvarbu kaip žaistų jo
 priešininkas, žaidėjas pasieks poziciją, kurios vertė lygi
 :math:`v` arba dar palankesnė, t. y. didesnė už :math:`v`, jei tai
 maksimizuojantis žaidėjas arba mažesnė už :math:`v`, jei tai
-minimizuojantis žaidėjas (:num:`img-13-medis6` pav.).
+minimizuojantis žaidėjas (:numref:`img-13-medis6` pav.).
 
 .. _img-13-medis6:
 
@@ -766,7 +766,7 @@ akivaizdu, kad minimizuojantis žaidėjas iš pozicijos :math:`P`
 rinkdamasis ėjimą su kuo mažesne verte pasieks, kad
 :math:`v_P < alfa`. Taigi pozicija :math:`P` maksimizuojančiam
 žaidėjui nebeįdomi ir likusių ėjimų iš :math:`P` galima
-nebenagrinėti (:num:`img-13-medis7` pav.).
+nebenagrinėti (:numref:`img-13-medis7` pav.).
 
 .. _img-13-medis7:
 
@@ -787,7 +787,7 @@ akivaizdu, kad maksimizuojantis žaidėjas iš pozicijos :math:`P`
 rinkdamasis ėjimą su kuo didesne verte pasieks, kad
 :math:`v_P > beta`. Taigi pozicija :math:`P` minimizuojančiam
 žaidėjui nebeįdomi ir likusių ėjimų iš :math:`P` galima
-nebenagrinėti (:num:`img-13-medis8` pav.).
+nebenagrinėti (:numref:`img-13-medis8` pav.).
 
 .. _img-13-medis8:
 

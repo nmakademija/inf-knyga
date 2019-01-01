@@ -346,7 +346,8 @@ viena viršūnė priklauso MJM.
   +-------------+-----------------------------------------------------+
   | |primas_d|  | Liko viena neprijungta viršūnė; ją pigiausiai       |
   |             | galima prijungti briauna :math:`CB`, jos svoris –   |
-  |             | 20; gauname :num:`img-11-mjm` pav. pavaizduotą MJM  |
+  |             | 20; gauname :numref:`img-11-mjm` pav.               |
+  |             | pavaizduotą MJM                                     |
   +-------------+-----------------------------------------------------+
 
 Kaip jau minėjome, Primo algoritmo realizacija labai primena Dijkstros
