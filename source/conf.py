@@ -33,7 +33,7 @@ sys.path.append(os.path.abspath('sphinxext'))
 # ones.
 extensions = [
     'sphinx.ext.todo',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
     'numfig',
 ]
