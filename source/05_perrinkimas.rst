@@ -679,27 +679,34 @@ visus įmanomus žodžius, kurių ilgis :math:`n` iš abėcėlės
           end;
   end;
 
+
 .. code-block:: unicode_cpp
 
   const int MAXN = 20;
-  int p[MAXN];
-  int panaudotas[MAXN+1];
 
-  void gen(int nuo, int m, int n, int k) {
-      if(m >= k) {
-          spausdink(k);
-          return;
-      }
-      for(int i = nuo; i <= n; i++) {
-          if(!panaudotas[i]) {
-              panaudotas[i] = true;
-              p[m] = i;
-              gen(i+1, m+1, n, k);
-              p[m] = 0;
-              panaudotas[i] = false;
+  bool parinktas[MAXN];
+
+  void spausdink(int m) {
+      cout << "{";
+      for(int i = 0; i < m; i++) {
+          if(parinktas[i]) {
+              cout << i << " ";
           }
       }
+      cout << "}" << endl;
   }
+
+  void gen(int k, int n) {
+      if(k >= n) {
+          spausdink(n);
+          return;
+      }
+      for(int log = 0; log <= 1; log++) {
+          parinktas[k] = log;
+          gen(k+1, n);
+      }
+  }
+
 
 Norėdami gauti visus poaibius iš 4 elementų, į procedūrą
 ``generuok`` kreipiamės:
@@ -712,7 +719,7 @@ Norėdami gauti visus poaibius iš 4 elementų, į procedūrą
 .. code-block:: unicode_cpp
 
   int n = 4;
-  gen(1, n);
+  gen(0, n);
 
 Suskaičiuosime, kiek skirtingų poaibių turės aibė iš :math:`n`
 elementų, o tuo pačiu ir algoritmo sudėtingumą. Poaibių skaičius
@@ -829,33 +836,6 @@ egzistuoja.
           end;
       end;
   end;
-
-.. code-block:: unicode_cpp
-
-  const int MAXN = 20;
-
-  bool parinktas[MAXN];
-
-  void spausdink(int m) {
-      cout << "{";
-      for(int i = 0; i < m; i++) {
-          if(parinktas[i]) {
-              cout << i << " ";
-          }
-      }
-      cout << "}" << endl;
-  }
-
-  void gen(int k, int n) {
-      if(k >= n) {
-          spausdink(n);
-          return;
-      }
-      for(int log = 0; log <= 1; log++) {
-          parinktas[k] = log;
-          gen(k+1, n);
-      }
-  }
 
 Į procedūrą ``generuok`` turi būti kreipiamasi tokiu būdu:
 
