@@ -176,6 +176,17 @@ visuomet [#f24]_ yra simetrinis įstrižainės atžvilgiu.
                             1..MAXN] of boolean;
        end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;  // maksimalus viršūnių skaičius
+                        // dažniausiai galima nustatyti pagal sąlygoje pateiktus ribojimus
+
+  int n;                    // viršūnių skaičius
+  bool briauna[MAXN][MAXN]; // jei briauna[i][j] == true, tai grafe yra briauna tarp viršūnių i ir j
+
+  // Pastaba: originaliame pavyzdyje grafas pateikiamas kaip struktūra,
+  //  tačiau čia kintamuosius ir bool masyvą apsirašome globaliai.
+
 Kol visos masyvo briauna reikšmės lygios false, grafe nėra nė vienos
 briaunos. Priklausomai nuo uždavinio pradinių duomenų, kai kurias
 viršūnes reikės sujungti briauna. Tai atlieka tokia procedūra:
@@ -188,6 +199,19 @@ viršūnes reikės sujungti briauna. Tai atlieka tokia procedūra:
       g.briauna[u, v] := true;
       g.briauna[v, u] := true;
   end;
+
+.. code-block:: unicode_cpp
+
+  void papildykBriauna (int u, int v) {
+      /*
+          Kadangi grafo kaimynystės matricą saugojomės
+          globaliai (žr. ankstesnį kodą), nereikia
+          paties grafo paduoti funkcijos parametruose.
+      */
+
+      briauna[v][u] = true;
+      briauna[u][v] = true;
+  }
 
 Toks grafo vaizdavimas vadinamas **kaimynystės matrica**. Tokio
 vaizdavimo kompiuteryje privalumai – jo paprastumas ir galimybė
@@ -237,6 +261,17 @@ gali būti didžiausias viršūnių skaičius.
                                         { viršūnių sąrašas }
        end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;  // maksimalus galimas viršūnių skaičius
+                        // dažniausiai galima nustatyti pagal sąlygoje pateiktus ribojimus
+
+  int n;                 // viršūnių skaičius
+  vector<int> adj[MAXN]; // adj[i] yra i-tosios viršūnės kaimynų sarašas
+
+  // Pastaba: pascal kalbos kode grafas pateikiamas kaip struktūra,
+  //  tačiau čia kintamuosius ir kaimynystės sąrašą apsirašome globaliai.
+
 Kai grafe nėra briaunų, visų viršūnių kaimynių skaičiaus
 atributas lygus nuliui. Įterpti briauną :math:`(u, v)` į šitaip
 vaizduojamą grafą reiškia papildyti viršūnių :math:`u` ir
@@ -256,6 +291,21 @@ vaizduojamą grafą reiškia papildyti viršūnių :math:`u` ir
           end;
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  void papildykBriauna (int u, int v) {
+      /*
+          Kadangi grafo kaimynystės sąrašą saugojomės
+          globaliai (žr. ankstesnį kodą), nereikia
+          paties grafo paduoti funkcijos parametruose.
+      */
+
+      adj[u].push_back (v);
+      if (u != v) { // jei tai ne kilpa
+          adj[v].push_back (u);
+      }
+  }
 
 Nors surasti vienos viršūnės kaimynes galime labai greitai,
 patikrinti, ar viršūnes :math:`u` ir :math:`v` grafe jungia briauna
@@ -375,7 +425,7 @@ kiekvienai viršūnei įsimena, iš kurios ši buvo aplankyta.
 
   Paieškos gilyn pirminumo medis
 
-Žemiau pateiktas algoritmo tekstas Paskalio kalba. Algoritmo veikimo
+Žemiau pateiktas algoritmo tekstas Paskalio ir C++ kalbomis. Algoritmo veikimo
 metu dažnai reikės rasti kurios nors viršūnės kaimynes, todėl
 grafą vaizduosime kaimynystės sąrašais.
 
@@ -408,6 +458,25 @@ grafą vaizduosime kaimynystės sąrašais.
       spalva[v] := juoda;
   end;
 
+.. code-block:: unicode_cpp
+
+  int spalva[MAXN];      // spalva[i] yra 0, jei i-tosios viršūnės spalva yra balta,
+                        //               1 - jei pilka,
+                        //               2 - jei juoda
+                        // pradinės reikšmės - 0
+  int pirmine[MAXN];     // prieš kviečiant DFS reiktų nustatyti pradines reikšmes į -1
+
+  void dfs (int v) {
+      spalva[v] = 1;            // nuspalvinam viršūnę v pilkai
+      for (int u : adj[v]) {    // einame per kaimynų sąrašą
+          if (spalva[u] == 0) { // kaimyninė viršūnė u yra dar neaplankyta
+              pirmine[u] = v;
+              dfs (u);
+          }
+      }
+      spalva[v] = 2;            // nuspalvinam viršūnę v juodai
+  }
+
 Iškvietus ``ieškok_gilyn(v0)``, visos viršūnės, kurias galima
 pasiekti briaunomis iš viršūnės :math:`v_0`, bus pažymimos juodai.
 Atspausdinti kelią, kuriuo buvo pasiekta viršūnė :math:`u`, nesunku
@@ -421,6 +490,14 @@ pasinaudojus masyve ``pirminė`` išsaugota informacija:
           spausdink_kelią(pirminė[u]);
       writeln(u);
   end;
+
+.. code-block:: unicode_cpp
+
+  void spausdinkKelia (int u) {
+      if (pirmine[u] != -1) // jei tai nėra pradinė viršūnė (nuo kurios pradėjom paiešką gilyn)
+          spausdinkKelia (pirmine[u]);
+      cout << u << "\n";
+  }
 
 Iš tiesų algoritme pakaktų viršūnes spalvinti tik dviem spalvomis:
 atskirti aplankytas nuo neaplankytų. Tačiau naudojant tris spalvas
@@ -506,6 +583,27 @@ aplankytos **visos** grafo viršūnės.
       { jei buvo aplankytos visos viršūnės – tai grafas jungus }
       jungus := sk = g.n;
   end;
+
+.. code-block:: unicode_cpp
+
+  bool aplankyta[MAXN];
+  int sk = 0;            // kiek viršūnių aplankėm
+
+  void dfs (int v) {
+      aplankyta[v] = true;
+      sk++;
+      for (int u : adj[v]) // einame per viršūnės v kaimynų sąrašą
+          if (!aplankyta[u])
+              dfs (u);
+  }
+
+  bool jungus () {
+      for (int i = 0; i < n; i++)
+          aplankyta[i] = false;
+      sk = 0;
+      dfs (0);
+      return (sk == n);
+  }
 
 Uždavinys *Epidemijos modeliavimas*: grafo jungumo komponentų paieška
 =====================================================================
@@ -616,6 +714,59 @@ paieškos metu.
           užsikrės := užsikrės + komp_dydis[i];
   end;
 
+.. code-block:: unicode_cpp
+
+  bool mazejimo (int a, int b) { // funkcija rikiavimui mažėjimo tvarka
+      return a > b;
+
+  }
+
+  const int MAXN = ...;  // maksimalus grafo viršūnių skaičius
+                        // jį galima sužinoti iš sąlygoje pateiktų ribojimų
+
+  int n;                 // viršūnių skaičius
+  vector<int> adj[MAXN]; // kaimynystės sąrašas
+  bool aplankyta[MAXN];
+  vector<int> kompDydis; // komponentų dydžių sąrašas
+
+  int sk = 0;            // kiek viršūnių aplankėm
+
+  void dfs (int v) {
+      aplankyta[v] = true;
+      sk++;
+      for (int u : adj[v]) // einame per viršūnės v kaimynų sąrašą
+          if (!aplankyta[u])
+              dfs (u);
+  }
+
+  int uzsikres (int m) { // m - jau užsikrėtusių paukščių skaičius (duodamas įvestyje)
+      for (int i = 0; i < n; i++)
+          aplankyta[i] = false;
+
+      for (int i = 0; i < n; i++) {
+          if (!aplankyta[i]) {
+              sk = 0;
+              dfs (i);
+              kompDydis.push_back (sk);
+          }
+      }
+
+      sort (kompDydis.begin(), kompDydis.end(), mazejimo);    // surikiuojam dydžius mažėjimo tvarka
+
+      int ats = 0;
+      int iki;
+
+      if (m > (int)kompDydis.size()) // užsikrėtusių paukščių gali būti daugiau nei jungumo komponentų
+          iki = (int)kompDydis;
+      else
+          iki = m;
+
+      for (int i = 0; i < iki; i++)
+          ats += kompDydis[i];
+
+      return ats;
+  }
+
 .. _skyrelis-paieška-platyn:
 
 Paieška platyn
@@ -670,6 +821,47 @@ paieškos platyn algoritmui:
       eil.pradžia := eil.pradžia + 1;
       išimk := eil.duom[eil.pradžia];
   end;
+
+.. code-block:: unicode_cpp
+
+/*
+    Pastaba: C++ kalboje jau yra suimplementuota eilė:
+     #include <queue>
+     queue<int> q;
+    Tokia eilė palaiko visas reikiamas operacijas:
+     q.push(x) - įdeda į eilės galą skaičių x
+     q.front() - grąžina eilės priekyje esantį elementą
+     q.pop()   - pašalina iš eilės priekinį elementą
+
+    Visgi, įdomumo dėlei, pateikiame ir eilės kaip struktūros
+    implementaciją, analogišką esančiai knygoje.
+*/
+
+
+struct eile {
+    int duom[MAXN];
+    int pradzia, pabaiga;
+
+    void isvalyk () {
+        pradzia = pabaiga = 0;
+    }
+
+    bool tuscia () {
+        return (pradzia == pabaiga);
+    }
+
+    void idek (int x) {
+        pabaiga++;
+        duom[pabaiga] = x;
+    }
+
+    int isimk () {
+        pradzia++;
+        return duom[pradzia];
+    }
+
+};
+
 
 Kaip ir paieškos gilyn atveju, algoritmo vykdymo metu viršūnės
 spalvinamos balta, pilka ir juoda spalvomis, nors užtektų ir dviejų
@@ -761,6 +953,41 @@ Grafas vaizduojamas kaimynystės sąrašais.
           spalva[v] := juoda;
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  int atstumas[MAXN];    // saugomi atstumai nuo pradinės iki visų kitų viršūnių
+  int pirmine[MAXN];
+  int spalva[MAXN];      // 0, jei balta,
+                        // 1, jei pilka,
+                        // 2, jei juoda
+
+  void bfs (int p) {     // p - pradinė viršūnė
+      queue<int> q;
+      for (int i = 0; i < n; i++)
+          atstumas[i] = -1;
+
+      // į eilę įtraukiama pirma viršūnė
+      spalva[p] = 1; // nuspalvinama pilkai
+      atstumas[p] = 0;
+      pirmine[p] = -1;
+      q.push(p);
+
+      while (!q.empty()) {
+          int v = q.front();
+          q.pop();
+          for (int u : adj[v]) { // einame per viršūnės v kaimynų sąrašą
+              // dar neaplankytos (baltos) v kaimynės įtraukiamos į eilę
+              if (spalva[u] == 0) {
+                  spalva[u] = 1; // viršūnė u nuspalvinama pilkai
+                  pirmine[u] = v;
+                  atstumas[u] = atstumas[v] + 1;
+                  q.push(u);
+              }
+          }
+          spalva[v] = 2; // viršūnė v nuspalvinama juodai
+      }
+  }
 
 Jei reikia išspausdinti trumpiausią kelią nuo pradinės viršūnės
 iki viršūnės :math:`u`, naudojamės sudarytu pirminumo medžiu ir
@@ -885,6 +1112,51 @@ kaimynystės sąrašais.
       for i := 1 to nyk_sk do
          spės[i] := atstumas[kamb[i]] <= t;
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...,  // maksimalus kambarių (grafo viršūnių) skaičius
+            MAXK = ...;  // maksimalus nykštukų skaičius
+                        // tiek MAXN, tiek MAXK galima sužinoti iš pateiktų sąlygoje ribojimų
+
+  int n;                 // viršūnių (kambarių) skaičius
+  vector<int> adj[MAXN]; // kaimynystęs sąrašas, kur adj[i] yra i-tosios viršūnės kaimynų sąrašas
+
+  int nykSk;             // nykštukų skaičius
+  int kamb[MAXN];        // kamb[i] - i-tojo nykštuko kambario numeris
+  int isejimas, t;
+  bool spes[MAXN];
+
+  int atstumas[MAXN];
+
+  void bfs (int p) { // p - pradinė viršūnė
+      queue<int> q;
+      for (int i = 0; i < n; i++)
+          atstumas[i] = -1;
+
+      // į eilę įtraukiama pradinė viršūnė
+      atstumas[p] = 0;
+      q.push (p);
+
+      while (!q.empty()) {
+          int v = q.front();
+          q.pop();
+          for (int u : adj[v]) { // pereinama per viršūnės v kaimynų sąrašą
+              // visos neaplankytos (pažymėtos atstumu -1) v kaimynės įtraukiamos į eilę
+              if (atstumas[u] == -1) {
+                  atstumas[u] = atstumas[v] + 1;
+                  q.push(u);
+              }
+          }
+      }
+  }
+
+  void kasSpes () {
+      bfs (isejimas);
+      for (int i = 0; i < nykSk; i++)
+          spes[i] = atstumas[kamb[i]] <= t;
+  }
+
 
 .. rubric:: Išnašos
 
