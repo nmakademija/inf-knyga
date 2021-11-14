@@ -128,6 +128,18 @@ Gavome :math:`DBD(12, 8) = 4`. Užrašysime Euklido algoritmą Paskalio kalba
     DBD := a;
   end;
 
+.. code-block:: unicode_cpp
+
+  long long DBD(long long a, long long b) {
+      long long c;
+      while (b > 0) {
+          c = a;
+          a = b;
+          b = c % b;
+      }
+      return a;
+  }
+
 Jei reikia rasti dviejų skaičių DBD, tačiau nežinome, ar jie
 teigiami, funkciją iškviečiame perduodami skaičių modulius:
 ``DBD(abs(a), abs(b))``.
@@ -198,6 +210,12 @@ tai Euklido algoritmą nesunku užrašyti rekursyvia [#f7]_ funkcija:
       DBD := DBD(b, a mod b);
   end;
 
+.. code-block:: unicode_cpp
+
+  long long DBD(long long a, long long b) {
+      return b == 0 ? a : DBD(b, a%b);
+  }
+
 Pastebėkime, kad jei :math:`a < b`, algoritmas pirmu žingsniu šiuos
 skaičius sukeičia vietomis, pavyzdžiui,
 :math:`DBD(24, 54) = DBD(54, 24) = DBD(24, 6) = DBD(6, 0) = 6`.
@@ -227,6 +245,12 @@ bendrąjį kartotinį:
     MBK := a * b div DBD(a, b);
   end;
 
+.. code-block:: unicode_cpp
+
+  long long MBK(long long a, long long b) {
+      return a * b / DBD(a,b);
+  }
+
 .. note::
 
   Svarbu nepamiršti, kad ``longint`` tipo kintamieji gali saugoti
@@ -252,11 +276,25 @@ fragmentą, randantį visų :math:`k` skaičių :math:`DBD` ir
   for i := 1 to k do
     visųDBD := DBD(abs(m[i]), visųDBD);
 
+.. code-block:: unicode_cpp
+
+  int visuDBD = 0; // po pirmo žingsnio taps lygiu m[0]
+  for(int i = 0; i < n; i++) {
+      visuDBD = DBD(visuDBD, abs(m[i]));
+  }
+
 .. code-block:: unicode_pascal
 
   visųMBK := 1; { po pirmo žingsnio taps lygiu m[1] }
   for i := 1 to k do
     visųMBK := MBK(abs(m[i]), visųMBK);
+
+.. code-block:: unicode_cpp
+
+  int visuMBK = 1; // po pirmo žingsnio taps lygiu m[0]
+  for(int i = 0; i < n; i++) {
+      visuMBK = MBK(visuMBK, abs(m[i]));
+  }
 
 .. rubric:: Išnašos
 

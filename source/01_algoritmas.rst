@@ -112,6 +112,18 @@ ir suskaičiuokime atliekamų elementarių veiksmų skaičių.
       end;
   writeln(suma);                  // vieną kartą
 
+.. code-block:: unicode_cpp
+
+  int suma = 0;                       // atliekamas vieną kartą
+  cin >> n;                           //            vieną kartą
+  for(int i = 1; i <= n; i++) {       //            n kartų
+      for(int j = 1; j <= n; j++) {   //            n^2 kartų
+          cin >> a;                   //            n^2 kartų
+          suma += a;                  //            n^2 kartų
+      }
+  }
+  cout << suma << endl;               //            vieną kartą
+
 Elementarių veiksmų skaičius lygus
 :math:`1 + 1 + n + n^2 + n^2 + 2n^2 + 1 = 4n^2 + n + 3`.
 Jį nusako funkcija :math:`f(n) = 4n^2 + n + 3`. Tai ir yra šio
@@ -247,6 +259,27 @@ paprasta programa:
       writeln(veiksmųSk);
   end.
 
+.. code-block:: unicode_cpp
+
+  #include <chrono>
+  #include <iostream>
+  using namespace std;
+
+  // Gauna laiką, praėjusį nuo 1970 m. sausio 1 d. milisekundėmis
+  long long dabartinisLaikas() {
+      return chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
+  }
+
+  int main() {
+      int veiksmuSk = 0;
+      long long pradzia = dabartinisLaikas();
+      while (dabartinisLaikas() - pradzia < 1000) {
+          veiksmuSk++;
+      }
+      cout << veiksmuSk << endl;
+      return 0;
+  }
+
 Ši programa suskaičiuoja, kiek elementarių veiksmų kompiuteris gali
 atlikti per vieną sekundę (suprantama, jei programą pradėjote ir baigėte
 vykdyti tą pačią parą). Be abejo, matavimai nėra visiškai tikslūs,
@@ -348,6 +381,24 @@ Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
       until (j = n) or rasta;
   until (i = n) or rasta;
 
+.. code-block:: unicode_cpp
+
+  bool rasta = false;
+  int atsPr, atsPab;
+  for(int i = 0; i < n && !rasta; i++) {
+      for(int j = i; j < n && !rasta; j++) {
+          int suma = 0;
+          for(int k = i; k <= j; k++) {
+              suma += a[k];
+          }
+          if (suma == K) {
+              atsPr = i;
+              atsPab = j;
+              rasta = true;
+          }
+      }
+  }
+
 Jei algoritmui baigus darbą kintamojo rasta reikšmė bus lygi true, tai
 :math:`i` ir :math:`j` bus ieškomi indeksai. Suskaičiavę, kiek elementarių
 veiksmų blogiausiu atveju atlieka algoritmas, pamatytume, kad greičiausiai
@@ -382,6 +433,22 @@ indeksą :math:`j`, prie sumos tiesiog pridėsime sekos narį :math:`a_j`.
       until (j = n) or (suma >= k);
       rasta := (suma = k);
   until (i = n) or rasta;
+
+.. code-block:: unicode_cpp
+
+  bool rasta = false;
+  int atsPr, atsPab;
+  for(int i = 0; i < n && !rasta; i++) {
+      int suma = 0;
+      for(int j = i; j < n && !rasta; j++) {
+          suma += a[j];
+          if (suma == K) {
+              atsPr = i;
+              atsPab = j;
+              rasta = true;
+          }
+      }
+  }
 
 Šį algoritmą sudaro du ciklai, antrasis jų pirmojo viduje, ir abiejų
 ilgis tiesiogiai priklauso nuo :math:`n`. Blogiausiu atveju abiejuose cikluose
@@ -425,6 +492,24 @@ nutrauks darbą.
           i := i + 1;
       end;
   rasta := (suma = k);
+
+.. code-block:: unicode_cpp
+
+  int suma = a[0];
+  int i = 0, j = 0;
+  while (suma != K && j < n) {
+      if (suma < K) {
+          j++;
+          if (j < n) {
+              suma += a[j];
+          }
+      }
+      else if (suma > K) {
+          suma -= a[i];
+          i++;
+      }
+  }
+  bool rasta = suma == K;
 
 Kadangi vienu žingsniu padidinamas tik vienas iš indeksų ir kiekvienas
 iš indeksų gali būti padidintas ne daugiau kaip :math:`n` kartų, daugių

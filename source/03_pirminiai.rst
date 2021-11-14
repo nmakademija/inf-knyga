@@ -101,6 +101,19 @@ Apibendrinę šiuos pastebėjimus, galime parašyti pakankamai spartų
       else d := d + 2;
   end;
 
+.. code-block:: unicode_cpp
+
+  bool pirminis(long long n) {
+      if(n == 1) return false;
+      if(n == 2) return true;
+      if(n%2 == 0) return false;
+
+      for(int d = 3; d*d <= n; d+=2) {
+          if(n%d == 0) return false;
+      }
+      return true;
+  }
+
 Įvykdę funkciją ``pirminis`` galime atsakyti į skyrelio pradžioje
 pateiktą klausimą – skaičius 234234743 tikrai pirminis.
 
@@ -199,6 +212,21 @@ loginiu masyvu pirm.
       end;
     end;
 
+.. code-block:: unicode_cpp
+
+  bool isPrime[MAXN];
+
+  void sieve(int n) {
+      fill(isPrime+2, isPrime+n+1, true); // isPrime[2] = isPrime[3] = ... = isPrime[n] = true
+      for(int i = 2; i*i <= n; i++) {
+          if(isPrime[i]) {
+              for(int j = 2*i; j <= n; j+=i) {
+                  isPrime[j] = false;
+              }
+          }
+      }
+  }
+
 Šis algoritmas reikalauja :math:`O(n)` atminties (loginiam masyvui).
 Turbūt ne taip akivaizdu, kad algoritmas reikalauja
 :math:`O(n \cdot \log(\log n))` laiko – šio fakto neįrodinėsime.
@@ -236,6 +264,16 @@ pirminis, funkciją galime pakeisti spartesne:
       else
         i := i + 1;
   end;
+
+.. code-block:: unicode_cpp
+
+  vector<int> primes; // visi pirminiai skaiciai iki sqrt(n)
+  bool pirminis(long long n) {
+      for(int i = 0; primes[i]*primes[i] <= n; i++) {
+          if(n%primes[i] == 0) return false;
+      }
+      return true;
+  }
 
 Pirminių skaičių paieška tęsiasi
 ================================

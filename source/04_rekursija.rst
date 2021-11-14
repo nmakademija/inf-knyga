@@ -92,6 +92,13 @@ Galime parašyti skaičiaus faktorialą skaičiuojančią funkciją:
           fakt := n * fakt(n - 1);
   end;
 
+.. code-block:: unicode_cpp
+
+  long long fakt(int n) {
+      if(n == 0) return 1;
+      return n*fakt(n-1);
+  }
+
 Kreipinio ``fakt(4)`` vykdymą iliustruoja žemiau pateiktas paveikslas:
 
 .. figure:: images/leidinys1/31.png
@@ -130,6 +137,13 @@ Fibonačio skaičiais. Juos taip pat galima skaičiuoti rekursyviai:
       else
           F := F(n - 1) + F(n - 2);
   end;
+
+.. code-block:: unicode_cpp
+
+  long long F(int n) {
+      if(n <= 2) return 1;
+      return F(n-1) + F(n-2);
+  }
 
 Nors ši funkcija atrodo tokia pat paprasta, kaip ir faktorialo, jos
 sudėtingumas yra eksponentinis [#f13]_. Taip yra todėl, kad kiekviena
@@ -234,6 +248,15 @@ baigiama.
           kelk(n - 1, tarp, nuo, ant) { tarp → ant }
       end
   end;
+
+.. code-block:: unicode_cpp
+
+  void kelk(int n, char nuo, char tarp, char ant) {
+      if(n == 0) return;
+      kelk(n-1, nuo, ant, tarp); //nuo -> tarp
+      cout << nuo << " -> " << ant << endl;
+      kelk(n-1, tarp, nuo, ant); // tarp -> ant
+  }
 
 Jei norime perkelti :math:`n` diskų nuo stiebo A ant stiebo C,
 iškviečiame ``kelk(n, 'A', 'B', 'C')``. Žemiau iliustruojamas
