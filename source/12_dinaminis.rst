@@ -174,6 +174,16 @@ funkcija, skaičiuojanti Fibonačio skaičius:
           F(n - 1) + F(n - 2);
   end;       
 
+.. code-block:: unicode_cpp
+
+  long long F (long long n) {
+      if (n == 0)
+          return 0;
+      if (n <= 2)
+          return 1;
+      return F(n-1) + F(n-2);
+  }
+
 :ref:`skyrelis-rekursyvios-funkcijos` skyrelyje rašėme, kad rekursyvus
 Fibonačio skaičių skaičiavimas yra eksponentinio sudėtingumo (labai
 lėtas). Pažvelkime į žemiau pateiktą kreipinio (į rekursinę
@@ -215,6 +225,23 @@ masyve, ir jos daugiau neperskaičiuoti:
       end;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAX = ...;
+  long long Fmas[MAX+1];
+
+  long long F (long long n) {
+      // dar neapsaičiuotos reikšmės žymimos -1
+      if (Fmas[n] != -1)
+          return Fmas[n];
+      if (n == 0)
+          return 0;
+      if (n <= 2)
+          return 1;
+      Fmas[n] = F(n-1) + F(n-2);
+      return Fmas[n];
+  }
+
 Toliau pateiktas šios funkcijos rekursijos medis. Kvadratėliais
 įrėmintos reikšmės iš naujo nebeskaičiuojamos, o paimamos iš
 lentelės.
@@ -245,6 +272,19 @@ gaunant iš dviejų paskutinių:
           Fmas[k] := Fmas[k - 1] + Fmas[k - 2];
       F := Fmas[n];
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAX = ...;
+  long long Fmas[MAX+1];
+
+  long long F (long long n) {
+      Fmas[0] = 0;
+      Fmas[1] = 1;
+      for (int k = 2; k <= n; k++)
+          Fmas[k] = Fmas[k-1] + Fmas[k-2];
+      return Fmas[n];
+  }
 
 Šioje funkcijoje :math:`F_n` reikšmė skaičiuojama iš **apačios į
 viršų**, t. y. pradedant nuo pačių mažiausių reikšmių ir vis
@@ -419,6 +459,39 @@ didesnę iš reikšmių ``D[k - 1, r]`` ir
                   D[k, r] := D[k - 1, r];
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...; // maksimalus eksponatų skaičius
+            MAXS = ...; // maksimalus panešamas svoris
+
+  int n;
+  int S;
+  int svoris[MAXN+1];
+  int verte[MAXN+1];
+  int dp[MAXN+1][MAXS+1]; // knygoje šis masyvas žymimas "D", tačiau žymėti "dp" yra labiau įprasta
+
+  void skaiciuok () {
+      // užpildomos kraštinės lentelės  reikšmės
+      for (int r = 0; r <= S; r++)
+          dp[0][r] = 0;
+      for (int k = 0; k <= n; k++)
+          dp[k][0] = 0;
+      // užpildoma visa likusi lentelės dalis
+      for (int r = 1; r <= S; r++) {
+          for (int k = 1; k <= n; k++) {
+              if (svoris[k] <= r)
+                  // jei k-asis eksponatas tilptų
+                  dp[k][r] = max(
+                      dp[k-1][r],                         // k-ojo daikto neimame - svorį r turime gauti iš pirmų k-1 daiktų
+                      verte[k-1] + dp[k-1][r-svoris[k]]   // k-ąjį daiktą imame - tuomet pridedama jo vertė ir iš pirmų k-1 daiktų reikia surinkti svorį r-svoris[k]
+                  );
+              else
+                  // jei k-asis eksponatas netilptų, jo įtraukti negalima
+                  dp[k][r] = dp[k-1][r];
+          }
+      }
+  }
+
 Štai kaip atrodo iki galo užpildyta nagrinėto pavyzdžio lentelė
 Pusjuodžiu šriftu pažymėtos reikšmės, gaunamos įtraukiant atitinkamą
 eksponatą į rinkinį.
@@ -468,6 +541,30 @@ kraštą.
           k := k - 1;
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  int n;
+  int S;
+  int svoris[MAXN+1];
+  int D[MAXN+1][MAXS+1];
+  bool imti[MAXN+1];
+
+  void sudarykRinkini () {
+      // pagal masyvų "D" ir "svoris" reikšmes nustatoma, kuriuos eksponatus verta imti
+      for (int k = 1; k <= n; k++)
+          imti[k] = false;
+
+      int k = n, r = S;
+      while (k > 0 && r > 0) {
+          if (D[k][r] > D[k-1][r]) {
+              // vadinasi, vertė D[k][r] gauta įtraukus k-ąjį eksponatą
+              imti[k] = true;
+              r -= svoris[k];
+          }
+          k--;
+      }
+  }
 
 Šią procedūrą reikia kviesti įvykdžius procedūrą ``skaičiuok``.
 Nesudėtinga įvertinti algoritmo sudėtingumą: pildant
@@ -574,6 +671,45 @@ sukonstruoti optimalų sprendinį: ``p[k]`` rodo ilgiausio sekos
           kmax := p[kmax];
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAX = ...; // maksimalus sekos ilgis
+
+  int n;
+  int a[MAX+1];
+  int posekis[MAX+1];
+  int ilgis;
+
+  void ilgPosekis () {
+      int L[MAX+1];
+      int p[MAX+1];
+
+      // optimalaus sprendinio vertė skaičiuojama iš apačios į viršų
+      int kmax = 1;
+      for (int m = 1; m <= n; m++) {
+          for (int k = 1; k < m; k++) {
+              if (a[k] < a[m] && L[k] > L[m]) {
+                  L[m] = L[k];
+                  // pažymimas priešpaskutinis šio posekio elementas
+                  p[m] = k;
+              }
+          }
+
+          // priskaičiuojamas ir m-asis elementas
+          L[m]++;
+          if (L[kmax] < L[m])
+              // tai ilgiausias kol kas rastas posekis
+              kmax = m;
+      }
+
+      // sukonstruojamas optimalus sprendinys
+      ilgis = L[kmax];
+      for (int k = ilgis; k > 0; k--) {
+          posekis[k] = a[kmax];
+          kmax = p[kmax];
+      }
+  }
 
 Šio sprendimo sudėtingumas laiko atžvilgiu yra :math:`O(n^2)`, o
 atminties atžvilgiu – :math:`O(n)`.
@@ -726,6 +862,36 @@ pat įrašoma :math:`true`:
                       G[k, S] := true;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...; // maksimalus dėmenų skaičius
+  const int MAXM = ...; // maksimali dėmens vertė
+
+  int n;
+  int A;
+  int v[MAXN+1];
+  bool G[MAXN*MAXM+1][MAXN+1];
+
+  void destyk () {
+      // išvalomos masyvo reikšmės
+      for (int k = 0; k <= n; k++)
+          for (int S = 0; S <= A; S++)
+              g[k][s] = false;
+
+      // išdėstomos sumos
+      G[0][0] = true; // inicializuojama kraštinė reikšmė
+      for (int k = 1; k <= n; k++) {
+          for (int S = 0; S <= A; S++) {
+              if (G[k-1][S])
+                  G[k][S] = true;
+              else if (v[k] <= S) {
+                  if (G[k-1][S-v[k]])
+                      G[k][S] = true;
+              }
+          }
+      }
+  }
+
 Algoritmo sudėtingumas atminties ir laiko atžvilgiu yra vienodas –
 :math:`O(n \cdot A)`.
 
@@ -777,6 +943,46 @@ dėmenų, t. y. :math:`G[n - 1, A] = true`. Priešingu atveju,
              S := S - v[i];
          end;
   end;
+
+.. code-block:: unicode_cpp
+
+  int n;
+  int A;
+  int v[MAXN+1];
+  int G[MAXN*MAXM+1][MAXN+1];
+  bool Rusnei[MAXN+1];
+
+  void dalybos () {
+      /*
+          rezultatas įrašomas į masyvą "Rusnei":
+          Rusnei[k] = true, jei k-ąją dovaną reikia skirti jai
+      */
+
+      // suskaičiuojama visų verčių suma
+      long long Vsum = 0;
+      for (int i = 1; i <= n; i++)
+          Vsum += v[i];
+
+      A = Vsum/2;
+      destyk();
+
+      // randama artimiausia Vsum/2 reikšmė, kurią galima išdėstyti
+      int S = Vsum/2;
+      while (!G[n][S]) {
+          S--;
+      }
+
+      // nustatoma, kurias iš dovanų skirti Rusnei, kad jų bendra vertė būtų lygi S
+      for (int i = 1; i <= n; i++)
+          Rusnei[i] = false;
+      for (int i = n; i > 0; i--) {
+          // tikrinama, ar S vertės rinkiniui priklauso i-toji dovana
+          if (!G[i-1][S]) {
+              Rusnei[i] = true;
+              S -= v[i];
+          }
+      }
+  }
 
 Šio sprendimo sudėtingumas sutampa su sumos dėstymo algoritmo
 sudėtingumu, kur dėstoma suma :math:`A` neviršija :math:`n \cdot m`,
@@ -990,6 +1196,69 @@ paskirstyti knygų peržiūrėjimo darbą darbuotojams, tekstas.
       nuo[1] := 1;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;      // maksimalus knygų skaičius
+  const int MAXK = ...;      // maksimalus darbuotojų skaičius
+  const int BEGALINIS = ...; // kažkoks kuo didesnis skaičius, pavyzdžiui, 1e9
+
+  int k;
+  int n;
+  int p; // puslapių skaičius
+  int ivertis;
+  int nuo[MAXN+MAXK+1];
+
+  int S (int i, int j) {
+      // apskaičiuoja knygų nuo i-tosios iki j-tosios puslapių skaičių sumą
+      int suma = 0;
+      for (int h = i; h <= j; h++)
+          suma += p[h];
+      return suma;
+  }
+
+  void paskristyk () {
+      int D[MAXK+1][MAXN+1], M[MAXK+1][MAXN+1];
+
+      // užpildomos kraštinęs reikšmės
+      for (int i = 1; i <= k; i++)
+          M[i][0] = 0;
+      for (int j = 1; j <= n; j++) {
+          M[1][j] = S(1, j);
+          D[1][j] = 1;
+      }
+
+      // apskaičiuojama likusi lentelės dalis
+      for (int i = 2; i <= k; i++) {
+          for (int j = 1; j <= n; j++) {
+              M[i][j] = BEGALINIS;
+
+              // renkamas minimumas...
+              for (int l = 1; l <= j; l++) {
+                  // ...iš maksimumų
+                  v = max(S(l, j), M[i-1][l-1]);
+                  if (v < M[i][j]) {
+                      M[i][j] = v;
+                      D[i][j] = l;
+                  }
+              }
+          }
+      }
+
+      // sukonstruojamas optimalus sprendinys
+      ivertis = M[k][n];
+      int j = n;
+      for (int i = k; i > 1; i--) {
+          nuo[i] = D[i][j];
+          j = D[i][j]-1;
+          /*
+              jei i-tajam darbuotojui skiriamos knygos nuo D[i][j],
+              tai likusiems i-1 darbuotojų reikia paskirti
+              D[i][j]-1 knygų
+          */
+      }
+      nuo[1] = 1;
+  }
+
 Procedūra grąžina kelis rezultatus:
 
 -  gautojo (optimalaus) paskirstymo *įvertį*, t. y. kiek daugiausiai
@@ -1104,6 +1373,67 @@ yra :math:`O(n^2 \cdot k)` vietoje :math:`O(n^3 \cdot k)`.
       {  }
       ...
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;      // maksimalus knygų skaičius
+  const int MAXK = ...;      // maksimalus darbuotojų skaičius
+  const int BEGALINIS = ...; // kažkoks kuo didesnis skaičius, pavyzdžiui, 1e9
+
+  int k;
+  int n;
+  int p; // puslapių skaičius
+  int ivertis;
+  int nuo[MAXN+MAXK+1];
+
+  void paskristyk () {
+      int D[MAXK+1][MAXN+1], M[MAXK+1][MAXN+1];
+      int r[MAXN+MAXK+1]; // pagalbinis masyvas
+
+      // užpildomas masyvas r                              //**
+      r[0] = 0;                                            //**
+      for (int j = 1; j <= n; j++)                         //**
+          r[j] = r[j-1] + p[j];                            //**
+
+      // užpildomos kraštinęs reikšmės
+      for (int i = 1; i <= k; i++)
+          M[i][0] = 0;
+      for (int j = 1; j <= n; j++) {
+          M[1][j] = r[j];                                  //**
+          D[1][j] = 1;
+      }
+
+      // apskaičiuojama likusi lentelės dalis
+      for (int i = 2; i <= k; i++) {
+          for (int j = 1; j <= n; j++) {
+              M[i][j] = BEGALINIS;
+
+              // renkamas minimumas...
+              for (int l = 1; l <= j; l++) {
+                  // ...iš maksimumų
+                  v = max(r[j] - r[i-1], M[i-1][l-1]);     //**
+                  if (v < M[i][j]) {
+                      M[i][j] = v;
+                      D[i][j] = l;
+                  }
+              }
+          }
+      }
+
+      // sukonstruojamas optimalus sprendinys
+      ivertis = M[k][n];
+      int j = n;
+      for (int i = k; i > 1; i--) {
+          nuo[i] = D[i][j];
+          j = D[i][j]-1;
+          /*
+              jei i-tajam darbuotojui skiriamos knygos nuo D[i][j],
+              tai likusiems i-1 darbuotojų reikia paskirti
+              D[i][j]-1 knygų
+          */
+      }
+      nuo[1] = 1;
+  }
 
 Uždavinys *Sodas* [#f47]_
 =========================
@@ -1223,6 +1553,46 @@ kurio kiekvienas elementas ``medis[x, y]`` rodo, ar taške
                   max_sodas := plotas;
           end;
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAXM = ...; // maksimalus sodo dydis
+
+  int m;                      // sodo dydis
+  bool medis[MAXM+1][MAXM+1]; // medis[x][y] = true, jei (x, y) auga medis
+  int Hp[MAXM+1][MAXM+1];
+  int K[MAXM+1][MAXM+1];
+  int D[MAXM+1][MAXM+1];
+
+  int maxSodas () {
+      // apskaičiuojame Hp reikšmes
+      for (int y = 1; y <= m; y++) {
+          for (int x = 1; x <= m; x++) {
+              if (y == 1)
+                  Hp[x][y] = 1;
+              else if (medis[x-1][y-1])
+                  Hp[x][y] = 1;
+              else
+                  Hp[x][y] = Hp[x][y-1] + 1;
+          }
+      }
+
+      // apskaičiuojame K ir D reikšmes kiekvienam stačiakampiui T
+      // šių procedūrų tekstas bus pateiktas vėliau
+      skaiciuokK();
+      skaiciuokD();
+
+      // belieka peržiūrėti visus stačiakampius ir išrinkti didžiausią
+      int maxPlotas = 0;
+      for (int y = 1; y <= m; y++) {
+          for (int x = 1; x <= m; x++) {
+              int plotas = Hp[x][y] * (D[x][y] - K[x][y]);
+              if (plotas > maxPlotas)
+                  maxPlotas = plotas;
+          }
+      }
+      return maxPlotas;
+  }
 
 Pagalvokime, kaip efektyviai apskaičiuoti masyvų ``K`` ir ``D``
 reikšmes. ``K`` ir ``D`` reikšmės kiekvienai eilutei (t. y.
@@ -1409,6 +1779,67 @@ peržiūrimos iš dešinės į kairę.
           end;
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  void skaiciuokD () {
+      int deklas[MAXM+1];
+      int sk = 0; // elementų skaičius dėkle
+      for (int y = 1; y <= m; y++) {
+          for (int x = 1; x <= m; x++) {
+              if (sk > 0) {
+                  int s = deklas[sk];
+                  while (sk > 0 && Hp[x][y] < Hp[s][y]) {
+                      // rastas dešinysis T(s, y) kraštas (x-1)
+                      D[s][y] = x-1;
+                      sk--;
+                      if (sk > 0) s = deklas[sk];
+                  }
+              }
+
+              // koordinatė x dedama į dėklą
+              sk++;
+              deklas[sk] = x;
+          }
+
+          // jei dėkle likus koordinatė x, tai T(x, y) tęsiasi iki pat dešiniojo sodo krašto
+          while (sk > 0) {
+              s = deklas[sk];
+              D[s][y] = m;
+              sk--;
+          }
+      }
+  }
+
+  void skaiciuokK () {
+      int deklas[MAXM+1];
+      int sk = 0; // elementų skaičius dėkle
+      for (int y = 1; y <= m; y++) {
+          for (int x = m; x > 0; x--) {
+              if (sk > 0) {
+                  int s = deklas[sk];
+                  while (sk > 0 && Hp[x][y] < Hp[s][y]) {
+                      // rastas kairysis T(s, y) kraštas (x-1)
+                      K[s][y] = x-1;
+                      sk--;
+                      if (sk > 0) s = deklas[sk];
+                  }
+              }
+
+              // koordinatė x dedama į dėklą
+              sk++;
+              deklas[sk] = x;
+          }
+
+          // jei dėkle likus koordinatė x, tai T(x, y) tęsiasi iki pat kairiojo sodo krašto
+          while (sk > 0) {
+              s = deklas[sk];
+              K[s][y] = 0;
+              sk--;
+          }
+      }
+  }
+
 
 Šio sprendimo sudėtingumas pagal laiką ir atmintį –
 :math:`O(m^2)`. Nesunkiai galime modifikuoti sprendimą taip, kad

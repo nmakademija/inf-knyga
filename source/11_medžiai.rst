@@ -86,6 +86,11 @@ visiškai apibrėžia jau anksčiau minėtas pirminumo masyvas:
   var pirminė : masyvas; { kiekvienai viršūnei įsimenama jos
                            pirminė viršūnė }
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...; // maksimalus medžio viršūnių skaičius
+  int pirmine[MAXN];    // kiekvienai viršūnei įsimenama jos pirminė viršūnė
+
 Taip pavaizdavę medį, galime sužinoti visas medžiui priklausančias
 briaunas (jos yra pavidalo (``k``, ``pirminė[k]``)) ir efektyviai
 rasti kelius nuo viršūnės :math:`v` iki šakninės viršūnės,
@@ -106,6 +111,11 @@ sąrašas:
            antr_sąr : array [1..MAX] of integer
        end;
        medis = array [1..MAX] of viršūnė;
+
+.. code-block:: unicode_cpp
+
+  int pirmine[MAXN];
+  vector<int> antrSar[MAXN]; // antrinių viršūnių sąrašas
 
 Toks vaizdavimas neefektyvus atminties požiūriu: nors visų
 viršūnių sąrašų ``antr_sąr`` ilgių suma bus lygi
@@ -419,6 +429,108 @@ minimalus jungiamasis medis – pirminumo masyvu.
       end;
   end;
 
+.. code-block:: unicode_cpp
+
+  /*
+      Pastaba: pirmiau pateikiamas Primo algoritmo kodas, analogiškas knygos kodui,
+      o žemiau - efektyvus, naudojantis duomenų struktūrą priority_queue (kaip ir efektyvioje
+      Dijkstros algoritmo realizacijoje).
+      Taip pat verta paminėti, kad olimpiadose patogiausia naudoti Kruskalio algoritmą MJM rasti,
+      kurio realizacijoje naudojama duomenų struktūra "nesikertančių aibių sąjunga" (trumpinama, DSU).
+      Apie Kruskalio algoritmą galite pasiskaityti čia: https://cp-algorithms.com/graph/mst_kruskal_with_dsu.html
+  */
+
+  const int BEGALINIS = ...; // kažkoks pakankamai didelis skaičius, pavyzdžiui 1e9
+  const int MAXN = ...;      // maksimalus viršūnių skaičius
+
+  int n;                     // viršūnių skaičius
+  int svoris[MAXN][MAXN];
+  int pirmine[MAXN];
+  vector<int> antrSar[MAXN]; // antrinių viršūnių sąrašas
+  bool prijungta[MAXN];
+  int kaina[MAXN];
+
+  void primo () {
+      // ieškomas medis grąžinamas masyve "pirmine"
+
+      // įrašomos pradinės masyvų reikšmės
+      for (int u = 0; u < n; u++) {
+          kaina[u] = BEGALINIS;
+          pirmine[u] = -1;
+          prijungta[u] = false;
+      }
+
+      int v = 0;
+      kaina[v] = 0; // pradėsime nuo viršūnės su numeriu 0
+
+      while (v != -1) {
+          // jei v != -1, tai rasta viršūnė, kurią galima prijungti
+          prijungta[v] = true;
+
+          for (int u = 0; u < n; u++) { // nagrinėjamos kaimynės
+              if (!prijungta[u] && svoris[v][u] < BEGALINIS && kaina[u] > svoris[v][u]) {
+                  // viršūnę u verčiau prijungti prie v
+                  kaina[u] = svoris[v][u];
+                  pirmine[u] = v;
+              }
+          }
+
+          // randama tolesnė kandidatė - dar neprijungta viršūnė su mažiausia prijungimo kaina
+          v = -1;
+          int minKaina = BEGALINIS;
+          for (int u = 0; u < n; u++) {
+              if (!prijungta[u] && kaina[u] < minKaina) {
+                  v = u;
+                  minKaina = kaina[u];
+              }
+          }
+
+          // jei jokia viršūnė nerasta, tai v = -1 ir ciklas nutraukiamas
+
+      }
+  }
+
+
+
+  // Primo algoritmo realizacija, naudojanti priority_queue
+
+  vector<pair<int, int>> adj[MAXN];
+  /*
+      adj[i] yra i-tosios viršūnės kaimynų sąrašas, kur
+      adj[i][j].first yra j-tosios kaimynės numeris
+      adj[i][j].second yra briaunos, jungiančios i-tąją viršūnę su jos j-tąja kaimyne, svoris
+  */
+
+  void primo () {
+      // įrašomos pradinės masyvų reikšmės
+      for (int u = 0; u < n; u++) {
+          kaina[u] = BEGALINIS;
+          pirmine[u] = -1;
+          prijungta[u] = false;
+      }
+
+      kaina[0] = 0;
+      priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> q; // priority_queue, kurios top() elementas visad yra mažiausias
+      q.push({kaina[p], p}); // į q visados dedam poras {kaina[i], i}, nes tada q.top() elementas visad būs mažiausios kainos
+
+      while (!q.empty()) {
+          int v = q.top().second;
+          if (!prijungta[v]) {
+              prijungta[v] = true;
+              for (auto p : adj[v]) { // einame per viršūnės v kaimynus
+                  int u = p.first;  // kaimynės numeris
+                  int w = p.second; // briaunos tarp v ir u svoris
+                  if (kaina[u] > w) {
+                      // verčiau į u eiti per v
+                      kaina[u] = w;
+                      pirmine[u] = v;
+                      q.push ({kaina[u], u});
+                  }
+              }
+          }
+      }
+  }
+
 Įvykdžius algoritmą, minimaliam jungiamajam medžiui priklauso
 briaunos (``v``, ``pirminė[v]``), kur :math:`v` – bet kuri grafo
 viršūnė, išskyrus pradinę. Primo algoritmo sudėtingumas –
@@ -541,6 +653,58 @@ komutatoriai nuo 1 iki :math:`m`, o kompiuteriai – nuo
       for i := 2 to g.n do
           junk(i, pirminė[i]);
   end;
+
+.. code-block:: unicode_cpp
+
+  const int BEGALINIS = ...; // kažkoks pakankamai didelis skaičius, pavyzdžiui 1e9
+  const int MAXM = ...;      // maksimalus komutatorių skaičius
+  const int MAXK = ...;      // maksimalus kompiuterių skaičius
+
+  int k;                                 // kompiuterių skaičius
+  int m;                                 // komutatorių skaičius
+  pair<int, int> jungimai[MAXM + MAXK];  // masyvas, kuriame bus pateikiamas atsakymas
+  int kaina[MAXM + MAXK][MAXM + MAXK];   // įrenginių jungimo kainų masyvas
+  int jungSk;
+  int jungKaina;
+
+  void junk (int a, int b) {
+      // įrenginys a sujungiamas su įrenginiu b
+      jungimai[jungSk].first = a;
+      jungimai[jungSk].second = b;
+      junkSk++;
+      jungKaina += kaina[a][b];
+  }
+
+  void raskJungimus () {
+      jungSk = 0;
+      jungKaina = 0;
+
+      /*
+          prijungiame kiekvieną kompiuterį prie "artimiausio" komutatoriaus
+          (kompiuteriai sunumeruoti nuo m iki m+k-1, komutatoriai - nuo 0 iki m-1
+      */
+
+      for (int i = m; i < m+k; i++) {
+          int t = 0;
+          for (int j = 0; j < m; j++)
+              if (kaina[i][t] > kaina[j][t])
+                  t = j;
+          junk(i, t);
+      }
+
+      // komutatorių jungimui sudarome grafą ir randame minimalų jungiamąjį medį
+      n = m;
+      for (int i = 0; i < m; i++)
+          for (int j = 0; j < m; j++)
+              if (i != j)
+                  svoris[i][j] = (i != j ? kaina[i][j] : BEGALINIS);
+      // pagal Primo algoritmą randamas MJM
+      Primo ();
+
+      // medžio briaunos yra (i, pirmine[i]), visoms i, išskyrus 0
+      for (int i = 1; i < n; i++)
+          junk (i, pirmine[i]);
+  }
 
 .. rubric:: Išnašos
 

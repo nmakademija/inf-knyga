@@ -54,6 +54,18 @@ negalės įgauti tokios reikšmės.
                              { briaunų svorių matrica }
        end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;      // maksimalus grafo viršūnių skaičius
+  const int BEGALINIS = ...; 
+  /*
+    Konstanta BEGALINIS - kažkoks pakankamai didelis skaičius, kuris turėtų būti didesnis už bet  
+    kokį įmanomą atstumą, tad atstotų begalybės reikšmę. Pavyzdžiui, dažnai naudojama reikšmė 1e9.
+  */
+
+  int n; // viršūnių skaičius
+  int svoris[MAXN][MAXN];
+
 Šitaip vaizduojant grafą, viršūnes :math:`u` ir :math:`v` jungia
 briauna, jei ``G.svoris[u, v] < BEGALINIS``.
 
@@ -247,6 +259,93 @@ vaizduojamas kaimynystės matrica.
            { jei jokia viršūnė nerasta, tai v = 0 ir ciklas nutraukiamas }
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  /*
+      Pastaba: pirmiau pateikiamas c++ kodas, analogiškas knygos kodui.
+      Žemiau jo galite rasti efektyvią Dijkstros algoritmo realizaciją,
+      kuri naudoja duomenų struktūrą priority_queue
+  */
+
+  int atstumas[MAXN];
+  int pirmine[MAXN];
+  bool prijungta[MAXN];
+
+  void dijkstra (int p) {
+      // įrašomos pradinės masyvų reikšmės
+      for (int u = 0; u < n; u++) {
+          atstumas[u] = BEGALINIS;
+          pirmine[u] = -1;
+          prijungta[u] = false;
+      }
+
+      atstumas[p] = 0;
+      int v = p;
+      while (v != -1) {
+          // jei v != -1, tai rasta viršūnė, kurią galima prijungti
+          prijungta[v] = true;
+          for (int u = 0; u < n; u++) {
+              if (svoris[v][u] < BEGALINIS && atstumas[u] > atstumas[v] + svoris[v][u]) {
+                  // į viršūnę u verčiau eiti per v
+                  atstumas[u] = atstumas[v] + svoris[v][u];
+                  pirmine[u] = v;
+              }
+          }
+
+          // randama tolesnė viršūnė - dar neprijungta viršūnė su mažiausiu atstumu
+          v = -1;
+          int minAtstumas = BEGALINIS;
+          for (int u = 0; u < n; u++) {
+              if (!prijungta[u] && atstumas[u] < minAtstumas) {
+                  v = u;
+                  minAtstumas = atstumas[u];
+              }
+          }
+          // jei tokia viršūnė nerasta, tai v = -1 ir ciklas nutraukiamas
+      }
+  }
+
+
+
+  // Dijkstros algoritmo realizacija su priority_queue
+
+  vector<pair<int, int>> adj[MAXN];
+  /*
+      adj[i] yra i-tosios viršūnės kaimynų sąrašas, kur
+      adj[i][j].first yra j-tosios kaimynės numeris
+      adj[i][j].second yra briaunos, jungiančios i-tąją viršūnę su jos j-tąja kaimyne, svoris
+  */
+
+  void dijkstra (int p) {
+      // įrašomos pradinės masyvų reikšmės
+      for (int u = 0; u < n; u++) {
+          atstumas[u] = BEGALINIS;
+          pirmine[u] = -1;
+          prijungta[u] = false;
+      }
+
+      atstumas[p] = 0;
+      priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> q; // priority_queue, kurios top() elementas visad yra mažiausias
+      q.push({atstumas[p], p}); // į q visados dedam poras {atstumas[i], i}, nes tada q.top() elementas visad būs mažiausio atstumo
+
+      while (!q.empty()) {
+          int v = q.top().second;
+          if (!prijungta[v]) {
+              prijungta[v] = true;
+              for (auto p : adj[v]) { // einame per viršūnės v kaimynus
+                  int u = p.first;  // kaimynės numeris
+                  int w = p.second; // briaunos tarp v ir u svoris
+                  if (atstumas[u] > atstumas[v] + w) {
+                      // verčiau į u eiti per v
+                      atstumas[u] = atstumas[v] + w;
+                      pirmine[u] = v;
+                      q.push ({atstumas[u], u});
+                  }
+              }
+          }
+      }
+  }
 
 Užrašytojo algoritmo sudėtingumas yra :math:`O(n^2)`, kur :math:`n`
 – grafo viršūnių skaičius. Pasitelkus sudėtingesnes duomenų
@@ -449,6 +548,89 @@ kelionės pradžios.
       atvykimas := laikas[pb];
       { jei maršruto nėra, atvykimas = BEGALINIS }
   end;
+
+.. code-block:: unicode_cpp
+
+  const long long BEGALINIS = 1e18;
+  const long long PARA = 24*60;
+  const int MAXM = ...; // maksimalus miestų skaičius
+  const int MAXR = ...; // maksimalus reisų skaičius
+
+  struct reisas {
+      int kur, kada, trukme;
+  };
+
+  struct reisaiIsMiesto {
+      int k; // miestų skaičius
+      reisas reisai[MAXR];
+  };
+
+  int n;                    // miestų skaičius
+  reisaiIsMiesto mst[MAXM]; // grafas
+  long long laikas[MAXM];   // atvykimo laikai
+  bool prijungta[MAXM];
+
+  void dijkstra (int pr) { // pr - pradinis miestas
+      // įrašomos pradinės masyvų reikšmės
+      for (int u = 0; u < n; u++) {
+          laikas[u] = BEGALINIS;
+          prijungta[u] = false;
+      }
+      laikas[pr] = 0;
+
+      int v = pr;
+      while (v != -1) {
+          // prijungiama viršūnė v
+          prijungta[v] = true;
+
+          // atnaujinama informacija apie kaimynes
+          for (int i = 0; i < mst[v].k; i++) {
+              int u = mst[v].reisai[i].kur;
+              int t = mst[v].reisai[i].trukme;
+              // kiek reikės laukti mieste u?
+              int atvyksta = laikas[v] % PARA;
+              int isvyksta = mst[v].reisai[i].kada;
+              if (atvyksta <= isvyksta) // reisu pavyks išvykti tą pačią dieną
+                  t += (isvyksta - atvyksta);
+              else // teks laukti kitos dienos
+                  t += (PARA - atvyksta) + isvyksta;
+
+              // ar į u verta vykti per v?
+              if (laikas[u] > laikas[v] + t)
+                  laikas[u] = laikas[v] + t;
+          }
+
+          // randama tolesnė kandidatė - dar neprijungta viršūnė su mažiausiu atstumu
+          v = -1;
+          int minAtstumas = BEGALINIS;
+          for (int u = 0; u < n; u++) {
+              if (!prijungta[u] && laikas[u] < minAtstumas) {
+                  v = u;
+                  minAtstumas = laikas[u];
+              }
+          }
+      }
+  }
+
+  void keliauk (int pr) { // pr - pradinis miestas
+      /*
+          pradinis miestas keičiamas dviem miestais:
+          miestu, kuriame kelionė prasidėjo, ir
+          fiktyviu, kuriame kelionė baigėsi
+      */
+      int pb = n;
+      n++;
+      for (int i = 0; i < n-1; i++)
+          for (int j = 0; j < mst[i].k; j++)
+              if (mst[i].reisai[j].kur == pr)
+                  mst[i].reisai[j].kut = pb;
+
+      // suskaičiuojama, per kokį mažiausią laiką galima nuvykti į kiekvieną miestą
+      dijkstra (pr);
+
+      return laikas[pb];
+      // jei maršruto nėra - laikas[pb] yra BEGALINIS
+  }
 
 .. rubric:: Išnašos
 

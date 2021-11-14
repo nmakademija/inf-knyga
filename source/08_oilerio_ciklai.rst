@@ -164,6 +164,18 @@ jas jungia:
            laipsnis : array [1..MAXN] of integer;
        end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;      // maksimalus galimas viršūnių skaičius
+                            // dažniausiai galima nustatyti pagal sąlygoje pateiktus ribojimus
+
+  int n;                     // viršūnių skaičius
+  int briaunuSk[MAXN][MAXN];
+  int laipsnis[MAXN];
+
+  // Pastaba: pascal kalbos kode grafas pateikiamas kaip struktūra,
+  //  tačiau čia kaimynystės matricą ir laipsnių masyvą apsirašome globaliai.
+
 Tarsime, kad masyvas ``laipsnis`` užpildomas sudarant grafą.
 
 Prieš pradedant ieškoti svarbu įsitikinti, ar tenkinamos būtinos ir
@@ -230,6 +242,56 @@ tiltu, jei tik įmanoma.
       end;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXB = ...; // maksimalus briaunų skaičius
+
+  int kelioIlgis;
+  int kelias[MAXB];
+
+  void flerio () {
+      /*
+          jei Oilerio ciklas/kelias grafe neegzistuoja, tai "kelioIlgis"
+          reikšmė bus lygi nuliui, kitu atveju Oilerio ciklas/kelias
+          įrašomas į masyvą "kelias"
+      */
+
+      int nelyg = 0;
+      // suskaičiuojama, kiek yra nelyginio laipsnio viršūnių, ir pradinė viršūnė (v)
+      int v = 0;
+      for (int k = 0; k < n; k++) {
+          if (laipsnis[k] % 2 == 1) {
+              nelyg++;
+              v = k;
+          }
+      }
+
+      kelioIlgis = 0;
+
+      if (nelyg == 0 || nelyg == 2) {
+          /*
+              jei tenkinamos būtinos Oilerio ciklo/kelio sąlygos,
+              vykdomas Flerio algoritmas
+          */
+          while (v > -1) {
+              kelioIlgis++;
+              kelias[kelioIlgis] = v;
+              int p = v; // paskutinė pereita viršūnė
+              v = -1;
+              // pagal Flerio algoritmą pasirenkama kita viršūnė
+              for (int u = 0; u < n; u++)
+                  if (briaunuSk[p][u] > 0 && (v == -1 || !tiltas(p, u)))
+                      v = u;
+              if (v > -1) {
+                  // ištrinama briauna
+                  briaunuSk[p][v]--;
+                  briaunuSk[v][p]--;
+              }
+          }
+      }
+
+  }
+
 Liko nerealizuota funkcija ``tiltas``. Ji turėtų grąžinti ``true``
 reikšmę, jei grafe :math:`g` briauna :math:`(u, v)` yra tiltas. Tai
 patikrinti nesunku: jei :math:`(u, v)` yra tiltas, tai pašalinus šią
@@ -260,6 +322,24 @@ pašalintą briauną pateikime rezultatą.
           tiltas := spalva[v] = balta;
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  bool tiltas (int v, int u) {
+      if (briaunuSk[v][u] > 1)
+          return false;
+      
+      for (int k = 0; k < n; k++)
+          spalva[k] = 0;
+
+      briaunuSk[v][u]--;
+      briaunuSk[u][v]--;
+      dfs(u);
+      briaunuSk[v][u]++;
+      briaunuSk[u][v]++;
+
+      return spalva[v] == 0;
+  }
 
 Uždavinys *Domino kauliukai* [#f33]_
 ====================================
@@ -403,6 +483,34 @@ sąrašais.
       aplankyta[v] := false;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;
+
+  int seka[MAXN];
+  bool aplankyta[MAXN];
+
+  void ieskok (int k, int v) {
+      /*
+          k - kiek viršūnių apeita,
+          v - kurioje viršūnėje sustota
+      */
+
+      seka[k] = v;
+      // aplankytomis žymimos konstruojamame kelyje esančios viršūnės
+      aplankyta[v] = true;
+      if (k == n) {
+          // jei apeitos visos viršūnės - tai rastas Hamiltono kelias
+          spausdink(n);
+      } else {
+          // bandoma toliau eiti į visas neaplankytas v kaimynes
+          for (int u : adj[v])
+              if (!aplankyta[u])
+                  ieskok (k+1, u);
+      }
+      aplankyta[v] = false;
+  }
+
 Norint rasti Hamiltono kelius, prasidedančius visose viršūnėse,
 reikia įvykdyti:
 
@@ -410,6 +518,11 @@ reikia įvykdyti:
 
   for v := 1 to g.n do
       ieškok(g, 1, v);
+
+.. code-block:: unicode_cpp
+
+  for (int v = 0; v < n; v++)
+      ieskok (1, v);
 
 Jei ieškotume ne kelių, o ciklų, tuomet sugeneravus visą seką
 reiktų papildomai patikrinti, ar egzistuoja briauna, jungianti pirmą
