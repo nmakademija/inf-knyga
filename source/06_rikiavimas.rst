@@ -369,6 +369,22 @@ Nesėkmingos paieškos atveju ši funkcija grąžins nulį, o sėkmingos
       end;
   end;
 
+.. code-block:: unicode_cpp
+
+  int binSearch(int x, vector<int> arr) {
+      int lo = 0, hi = masyvas.size()-1;
+      // ieskome intervale [0, n-1]
+      while (lo < hi) {
+          int mid = (lo+hi)/2;
+          if (arr[mid] < x) {
+              lo = mid+1;
+          } else {
+              hi = mid;
+          }
+      }
+      return mid;
+  }
+
 Taigi jei norime sužinoti, ar skaičius :math:`x` yra :math:`n`
 elementų masyve :math:`A`, turime patikrinti sąlygą
 ``ieškok(A, x, 1, n) > 0``.

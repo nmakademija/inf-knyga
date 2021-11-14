@@ -135,6 +135,38 @@ nuo lentynos – atstatyti buvusią reikšmę
               end;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = 20;
+  int p[MAXN];
+  bool panaudotas[MAXN+1];
+
+  // isspausdina sugeneruota kelini
+  void spausdink(int n) {
+      for(int i = 0; i < n; i++) {
+          cout << p[i] << " ";
+      }
+      cout << endl;
+  }
+
+  // n - elementu kiekis
+  // k - dabar nagrinejamo elemento indeksas
+  void gen(int n, int k) {
+      if(k >= n) {
+          spausdink(n);
+          return;
+      }
+      for(int i = 1; i <= n; i++) {
+          if(!panaudotas[i]) {
+              panaudotas[i] = true;
+              p[k] = i;
+              gen(n, k+1);
+              p[k] = 0;
+              panaudotas[i] = false;
+          }
+      }
+  }
+
 Kad galėtume išspausdinti visas trijų prekių išdėliojimo lentynoje
 tvarkas, įvykdome:
 
@@ -144,6 +176,13 @@ tvarkas, įvykdome:
   for i := 1 to n do
       panaudotas[i] := false;
   generuok(1, n);
+
+.. code-block:: unicode_cpp
+
+  int n = 3;
+  for(int i = 1; i <=n; i++)
+    panaudotas[i] = false;
+  gen(n, 0);
 
 .. figure:: images/5_skyrius/13_lin_medis.gif
   :align: center
@@ -305,7 +344,51 @@ saugoti, kur lentoje statomos valdovės.
                   įstr2[i - k] := false;
               end;
   end;
- 
+
+.. code-block:: unicode_cpp 
+
+  const int MAXN = 12;
+  bool eil[MAXN];
+  bool istr1[2*MAXN];
+  bool istr2[2*MAXN];
+  long long sprendiniuSk;
+
+  // padeda karaliene langelyje (r, c)
+  // r - eilutes numeris
+  // c - stulpelio numeris
+  // reiksme - true, jei padedame karaliene; false, jei nuimame
+  void padeti(int n, int r, int c, bool reiksme) {
+      eil[r] = reiksme;
+      istr1[r+c] = reiksme;
+      istr2[r-c+n-1] = reiksme; // pridedam n-1, kad numeracija pasidarytu nuo 0, o ne nuo neigiamu skaiciu
+  }
+
+  // ar langelis (r, c) nera kertamas jokios karalienes?
+  // r - eilutes numeris
+  // c - stulpelio numeris
+  bool arLaisvas(int n, int r, int c) {
+      return !eil[r] && !istr1[r+c] && !istr2[r-c+n-1];
+  }
+
+  // n - kiek is viso valdoviu
+  // c - kuriame stulpelyje dabar statome valdove
+  void statyk(int n, int c) {
+      if(c >= n) {
+          sprendiniuSk++;
+          return;
+      }
+      for(int r = 0; r < n; r++) {
+          if(arLaisvas(n, r, c)) {
+              padeti(n, r, c, true);
+              statyk(n, c+1);
+              padeti(n, r, c, false);
+          }
+      }
+  }
+
+  // funkcijos kvietimas main'e:
+  statyk(n, 0);
+
 .. figure:: images/5_skyrius/16_lin_valdoves.png
   :align: center
   :width: 400px
@@ -379,6 +462,28 @@ iš :math:`n` elementų renkame tik :math:`k (k \leq n)`.
               end;
   end;
 
+.. code-block:: unicode_cpp 
+
+  const int MAXN = 20;
+  int p[MAXN];
+  bool panaudotas[MAXN+1];
+
+  void gen(int m, int n, int k) {
+      if(m >= k) {
+          spausdink(k);
+          return;
+      }
+      for(int i = 1; i <= n; i++) {
+          if(!panaudotas[i]) {
+              panaudotas[i] = true;
+              p[m] = i;
+              gen(m+1, n, k);
+              p[m] = 0;
+              panaudotas[i] = false;
+          }
+      }
+  }
+
 Norėdami gauti visus gretinius iš 5 po 3, į procedūrą kreipiamės:
 
 .. code-block:: unicode_pascal
@@ -388,6 +493,15 @@ Norėdami gauti visus gretinius iš 5 po 3, į procedūrą kreipiamės:
   for i := 1 to n do
       panaudotas[i] := false;
   generuok(1, n, k);
+
+.. code-block:: unicode_cpp 
+
+  int n = 5;
+  int k = 3;
+  for(int i = 1; i <= n; i++)
+    panaudotas[i] = false;
+  gen(1, n, k);
+  
 
 Suskaičiuosime, kiek gali būti skirtingų gretinių be pasikartojimų,
 tuo pačiu įvertinsime ir algoritmo sudėtingumą. Pirmąją prekę
@@ -449,6 +563,28 @@ elementus.
               end;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = 20;
+  int p[MAXN];
+  int panaudotas[MAXN+1];
+
+  void gen(int nuo, int m, int n, int k) {
+      if(m >= k) {
+          spausdink(k);
+          return;
+      }
+      for(int i = nuo; i <= n; i++) {
+          if(!panaudotas[i]) {
+              panaudotas[i] = true;
+              p[m] = i;
+              gen(i+1, m+1, n, k);
+              p[m] = 0;
+              panaudotas[i] = false;
+          }
+      }
+  }
+
 Norėdami gauti visus skirtingus derinius iš 5 elementų po 3, į
 procedūrą kreipiamės:
 
@@ -459,6 +595,14 @@ procedūrą kreipiamės:
   for i := 1 to n do
       panaudotas[i] := false;
   generuok(1, 1, n, k);
+
+.. code-block:: unicode_cpp
+
+  int n = 5;
+  int k = 3;
+  for(int i = 1; i <= n; i++)
+    panaudotas[i] = false;
+  gen(1, n, k);
 
 Beliko apskaičiuoti, kiek gali būti skirtingų derinių be
 pasikartojimų iš :math:`n` po :math:`k`. Šį skaičių pažymėkime
@@ -535,6 +679,28 @@ visus įmanomus žodžius, kurių ilgis :math:`n` iš abėcėlės
           end;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = 20;
+  int p[MAXN];
+  int panaudotas[MAXN+1];
+
+  void gen(int nuo, int m, int n, int k) {
+      if(m >= k) {
+          spausdink(k);
+          return;
+      }
+      for(int i = nuo; i <= n; i++) {
+          if(!panaudotas[i]) {
+              panaudotas[i] = true;
+              p[m] = i;
+              gen(i+1, m+1, n, k);
+              p[m] = 0;
+              panaudotas[i] = false;
+          }
+      }
+  }
+
 Norėdami gauti visus poaibius iš 4 elementų, į procedūrą
 ``generuok`` kreipiamės:
 
@@ -542,6 +708,11 @@ Norėdami gauti visus poaibius iš 4 elementų, į procedūrą
 
   n := 4;
   generuok(1, n);
+
+.. code-block:: unicode_cpp
+
+  int n = 4;
+  gen(1, n);
 
 Suskaičiuosime, kiek skirtingų poaibių turės aibė iš :math:`n`
 elementų, o tuo pačiu ir algoritmo sudėtingumą. Poaibių skaičius
@@ -658,6 +829,33 @@ egzistuoja.
           end;
       end;
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAXN = 20;
+
+  bool parinktas[MAXN];
+
+  void spausdink(int m) {
+      cout << "{";
+      for(int i = 0; i < m; i++) {
+          if(parinktas[i]) {
+              cout << i << " ";
+          }
+      }
+      cout << "}" << endl;
+  }
+
+  void gen(int k, int n) {
+      if(k >= n) {
+          spausdink(n);
+          return;
+      }
+      for(int log = 0; log <= 1; log++) {
+          parinktas[k] = log;
+          gen(k+1, n);
+      }
+  }
 
 Į procedūrą ``generuok`` turi būti kreipiamasi tokiu būdu:
 
