@@ -38,6 +38,11 @@ didėjimo (nemažėjimo) tvarka:
   const MAXN = ...;   { maksimalus masyvo ilgis }
   type masyvas = array [1..MAXN] of integer;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...;
+  int a[MAXN];
+
 Rikiavimo algoritmų yra daug ir įvairių, tolesniuose skyreliuose
 aptarsime tik kelis naudingiausius. Pateiktus algoritmus bus nesunku
 pritaikyti ir kitokiems duomenų tipams.
@@ -81,6 +86,26 @@ elementai paslenkami pirmyn, o šis įterpiamas į naują savo vietą.
           A[i + 1] := t;
        end;
   end;
+
+.. code-block:: unicode_cpp
+
+  /*
+      Pastaba: kintamasis n ir masyvas a aprašytas globaliai
+      praeitame kodo pavyzdyje.
+  */
+
+  void rikiuok () {
+      for (int k = 0; k < n-1; k++) {
+          int t = a[k+1];
+          // Skaičių t terprsime į išrikiuotą masyvo dalį [1..k]
+          int i = k;
+          while (i > 0 && a[i] > t) {
+              a[i+1] = a[i];
+              i--;
+          }
+          a[i+1] = t;
+      }
+  }
 
 Algoritmo sudėtingumas blogiausiu atveju yra :math:`O(n^2)`. Tuo
 nesunku įsitikinti panagrinėjus algoritmo veikimą rikiuojant seką,
@@ -161,6 +186,36 @@ algoritmui.
       end;
   end;
 
+.. code-block:: unicode_cpp
+
+  /*
+      Pastaba: masyvas a aprašytas globaliai
+      viename iš praeitų kodo pavyzdžių.
+  */
+
+  int perskirk (int k, int d) {
+      int x = a[k]; // dalijamoji reikšmė
+      int i = k-1;
+      int j = d+1;
+      int rez = 0; // grąžinamas rezultatas
+      while (rez == 0) {
+          do { // praleidžiami elementai, mažesni už x
+              i++;
+          } while (a[i] >= x);
+
+          do { // praleidžiami elementai, didesni už x
+              j--;
+          } while (a[i] <= x);
+
+          if (i < j)
+              swap(a[i], a[j]);
+          else
+              rez = j;
+      }
+
+      return rez;
+  }
+
 Šis perskyrimo algoritmas pirmiausia pasirenka dalijamąją reikšmę
 :math:`x` ir pamažu augina dvi masyvo dalis: :math:`[k..i]` su
 mažesniais už :math:`x` elementais ir :math:`[j..d]` su elementais,
@@ -195,6 +250,25 @@ Dabar nesunku užrašyti greitojo rikiavimo algoritmą:
 
 Norint surikiuoti :math:`n` elementų seką :math:`A`, į procedūrą
 kreipiamasi ``rikiuok (A, 1, n);``
+
+.. code-block:: unicode_cpp
+
+  /*
+      Pastaba: kintamasis n ir masyvas a aprašytas globaliai
+      viename iš praeitų kodo pavyzdžių.
+  */
+
+  void rikiuok (int k, int d) {
+      if (k < d) {
+          int v = perskirk(k, d);
+          // rekursyviai išrikiuojamos kairioji ir dešinioji masyvo dalys
+          rikiuok (k, v);
+          rikiuok (v+1, d);
+      }
+  }
+
+  // Norint surikiuoti n elementų seką a, kviečiama funkcija:
+  rikiuok (0, n-1);
 
 .. figure:: images/6_skyrius/24_lin_quicksort.gif
   :align: center
@@ -275,6 +349,33 @@ nuo aibės, kuriai priklauso rikiuojamo masyvo elementai, dydžio.
       end;
   end;
 
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...; // maksimalus masyvo ilgis
+  const int MAXS = ...; // maksimali sekos nario reikšmė
+
+  int n;
+  int a[MAXN];
+  int c[MAXS+1]; // c[i] nurodys, kiek sekoje yra skaičių i
+
+  void rikiuok () {
+      // suskaičiuojama, kiek kokių elementų yra masyve a
+      for (int i = 0; i <= MAXS; i++)
+          c[i] = 0;
+      for (int i = 0; i < n; i++)
+          c[a[i]]++;
+
+      // visi n masyvo a elementų surašomi iš eilės
+      int j = 0;
+      for (int i = 0; i < n; i++) {
+          while (c[j] == 0) {
+              j++;
+          }
+          c[j]--;
+          a[i] = j;
+      }
+  }
+
 Paieškos uždavinys
 ==================
 
@@ -312,6 +413,19 @@ elementas :math:`x`, atlieka tokia funkcija:
       else
           ieškok := 0; { elementas nerastas }
   end;
+
+.. code-block:: unicode_cpp
+
+  const int MAXN = ...; // maksimalus sekos ilgis
+  int n, x;
+  int a[MAXN];
+
+  int ieskok () {
+      for (int i = 0; i < n; i++)
+          if (a[i] == x)
+              return i;
+      return -1; // elementas nerastas
+  }
 
 Baigus vykdyti tiesinę paiešką, funkcijos reikšmė bus lygi ieškomo
 elemento indeksui masyve :math:`A` arba nuliui, jei tokio elemento

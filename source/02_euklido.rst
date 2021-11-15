@@ -113,7 +113,7 @@ naudodamiesi Euklido algoritmu:
 
 -  :math:`b_{3} = 0`, taigi :math:`DBD(a, b) = a_{3} = 4`.
 
-Gavome :math:`DBD(12, 8) = 4`. Užrašysime Euklido algoritmą Paskalio kalba.
+Gavome :math:`DBD(12, 8) = 4`. Užrašysime Euklido algoritmą Paskalio ir C++ kalbomis.
 
 .. code-block:: unicode_pascal
 

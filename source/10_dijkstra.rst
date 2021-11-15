@@ -263,7 +263,7 @@ vaizduojamas kaimynystės matrica.
 .. code-block:: unicode_cpp
 
   /*
-      Pastaba: pirmiau pateikiamas c++ kodas, analogiškas knygos kodui.
+      Pastaba: pirmiau pateikiamas C++ kodas, analogiškas Paskalio kalba užrašytam kodui.
       Žemiau jo galite rasti efektyvią Dijkstros algoritmo realizaciją,
       kuri naudoja duomenų struktūrą priority_queue
   */
