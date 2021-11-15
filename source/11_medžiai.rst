@@ -432,7 +432,7 @@ minimalus jungiamasis medis – pirminumo masyvu.
 .. code-block:: unicode_cpp
 
   /*
-      Pastaba: pirmiau pateikiamas Primo algoritmo kodas, analogiškas knygos kodui,
+      Pastaba: pirmiau pateikiamas Primo algoritmo kodas, analogiškas kodui, užrašytam Paskalio kalba,
       o žemiau - efektyvus, naudojantis duomenų struktūrą priority_queue (kaip ir efektyvioje
       Dijkstros algoritmo realizacijoje).
       Taip pat verta paminėti, kad olimpiadose patogiausia naudoti Kruskalio algoritmą MJM rasti,

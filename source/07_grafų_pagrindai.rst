@@ -834,7 +834,7 @@ paieškos platyn algoritmui:
       q.pop()   - pašalina iš eilės priekinį elementą
 
       Visgi, įdomumo dėlei, pateikiame ir eilės kaip struktūros
-      implementaciją, analogišką esančiai knygoje.
+      implementaciją, analogišką užrašytai Paskalio kalba.
   */
 
 
