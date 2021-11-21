@@ -100,29 +100,35 @@ reikalingą laiką. Panagrinėkime programos fragmentą, randantį
 kvadratinėje :math:`n \times n` lentelėje surašytų skaičių sumą,
 ir suskaičiuokime atliekamų elementarių veiksmų skaičių.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  suma := 0;                      // atliekamas vieną kartą
-  read(n);                        //            vieną kartą
-  for i := 1 to n do              //            n kartų
-      for j := 1 to n do begin    //            n*n kartų
-          read(a);                //            n*n kartų
-          suma := suma + a;       //            n*n kartų
-                                  // (priskyrimas ir sumavimas)
-      end;
-  writeln(suma);                  // vieną kartą
+  .. tab:: Paskalis
 
-.. code-block:: unicode_cpp
+    .. code-block:: unicode_pascal
 
-  int suma = 0;                       // atliekamas vieną kartą
-  cin >> n;                           //            vieną kartą
-  for(int i = 1; i <= n; i++) {       //            n kartų
-      for(int j = 1; j <= n; j++) {   //            n^2 kartų
-          cin >> a;                   //            n^2 kartų
-          suma += a;                  //            n^2 kartų
+      suma := 0;                      // atliekamas vieną kartą
+      read(n);                        //            vieną kartą
+      for i := 1 to n do              //            n kartų
+          for j := 1 to n do begin    //            n*n kartų
+              read(a);                //            n*n kartų
+              suma := suma + a;       //            n*n kartų
+                                      // (priskyrimas ir sumavimas)
+          end;
+      writeln(suma);                  // vieną kartą
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int suma = 0;                       // atliekamas vieną kartą
+      cin >> n;                           //            vieną kartą
+      for(int i = 1; i <= n; i++) {       //            n kartų
+          for(int j = 1; j <= n; j++) {   //            n^2 kartų
+              cin >> a;                   //            n^2 kartų
+              suma += a;                  //            n^2 kartų
+          }
       }
-  }
-  cout << suma << endl;               //            vieną kartą
+      cout << suma << endl;               //            vieną kartą
 
 Elementarių veiksmų skaičius lygus
 :math:`1 + 1 + n + n^2 + n^2 + 2n^2 + 1 = 4n^2 + n + 3`.
@@ -247,38 +253,44 @@ daugelio dalykų: nuo procesoriaus, kompiliatoriaus, pačių veiksmų,
 kuriuos programa atlieka. Atliekamų veiksmų skaičių mums padės įvertinti
 paprasta programa:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  uses windows;
-  var pradžia, veiksmųSk : longint;
-  begin
-      veiksmųSk := 0;
-      pradžia := GetTickCount;
-      while GetTickCount - pradžia < 1000 do
-          inc(veiksmųSk);
-      writeln(veiksmųSk);
-  end.
+  .. tab:: Paskalis
 
-.. code-block:: unicode_cpp
+    .. code-block:: unicode_pascal
 
-  #include <chrono>
-  #include <iostream>
-  using namespace std;
+      uses windows;
+      var pradžia, veiksmųSk : longint;
+      begin
+          veiksmųSk := 0;
+          pradžia := GetTickCount;
+          while GetTickCount - pradžia < 1000 do
+              inc(veiksmųSk);
+          writeln(veiksmųSk);
+      end.
 
-  // Gauna laiką, praėjusį nuo 1970 m. sausio 1 d. milisekundėmis
-  long long dabartinisLaikas() {
-      return chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
-  }
+  .. tab:: C++
 
-  int main() {
-      int veiksmuSk = 0;
-      long long pradzia = dabartinisLaikas();
-      while (dabartinisLaikas() - pradzia < 1000) {
-          veiksmuSk++;
+    .. code-block:: cpp
+
+      #include <chrono>
+      #include <iostream>
+      using namespace std;
+
+      // Gauna laiką, praėjusį nuo 1970 m. sausio 1 d. milisekundėmis
+      long long dabartinisLaikas() {
+          return chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
       }
-      cout << veiksmuSk << endl;
-      return 0;
-  }
+
+      int main() {
+          int veiksmųSk = 0;
+          long long pradžia = dabartinisLaikas();
+          while (dabartinisLaikas() - pradžia < 1000) {
+              veiksmųSk++;
+          }
+          cout << veiksmųSk << endl;
+          return 0;
+      }
 
 Ši programa suskaičiuoja, kiek elementarių veiksmų kompiuteris gali
 atlikti per vieną sekundę (suprantama, jei programą pradėjote ir baigėte
@@ -361,43 +373,49 @@ Pabandykime pritaikyti įgytas žinias spręsdami konkretų uždavinį:
   Vykdymo laikas: 1 s.
 
 Aptarkime kelis galimus uždavinio sprendimo būdus bei jų sudėtingumą.
-Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir 
+Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
 :math:`j` poras, kiekvienąkart suskaičiuojant sekos narių nuo
 :math:`i`-ojo iki :math:`j`-ojo sumą:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  rasta := false;
-  i := 0;
-  repeat
-      j := i;
-      i := i + 1;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      rasta := false;
+      i := 0;
       repeat
-          j := j + 1;
-          suma := 0;
-          for l := i to j do
-              suma := suma + a[l];  { ši operacija vykdoma daugiausiai kartų }
-          rasta := (suma = k);
-      until (j = n) or rasta;
-  until (i = n) or rasta;
+          j := i;
+          i := i + 1;
+          repeat
+              j := j + 1;
+              suma := 0;
+              for l := i to j do
+                  suma := suma + a[l];  { ši operacija vykdoma daugiausiai kartų }
+              rasta := (suma = k);
+          until (j = n) or rasta;
+      until (i = n) or rasta;
 
-.. code-block:: unicode_cpp
+  .. tab:: C++
 
-  bool rasta = false;
-  int atsPr, atsPab;
-  for(int i = 0; i < n && !rasta; i++) {
-      for(int j = i; j < n && !rasta; j++) {
-          int suma = 0;
-          for(int k = i; k <= j; k++) {
-              suma += a[k];
-          }
-          if (suma == K) {
-              atsPr = i;
-              atsPab = j;
-              rasta = true;
+    .. code-block:: cpp
+
+      bool rasta = false;
+      int atsPr, atsPab;
+      for(int i = 0; i < n && !rasta; i++) {
+          for(int j = i; j < n && !rasta; j++) {
+              int suma = 0;
+              for(int k = i; k <= j; k++) {
+                  suma += a[k];
+              }
+              if (suma == K) {
+                  atsPr = i;
+                  atsPab = j;
+                  rasta = true;
+              }
           }
       }
-  }
 
 Jei algoritmui baigus darbą kintamojo rasta reikšmė bus lygi true, tai
 :math:`i` ir :math:`j` bus ieškomi indeksai. Suskaičiavę, kiek elementarių
@@ -419,36 +437,42 @@ taps lygi arba viršys :math:`k` (arba kol indeksas :math:`j` pasieks sekos
 pabaigą). Sumos neperskaičiuosime iš naujo kiekvieną kartą, o, padidinę
 indeksą :math:`j`, prie sumos tiesiog pridėsime sekos narį :math:`a_j`.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  rasta := false;
-  i := 0;
-  repeat
-      j := i;
-      i := i + 1;
-      suma := 0;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      rasta := false;
+      i := 0;
       repeat
-          j := j + 1;
-          suma := suma + a[j];
-      until (j = n) or (suma >= k);
-      rasta := (suma = k);
-  until (i = n) or rasta;
+          j := i;
+          i := i + 1;
+          suma := 0;
+          repeat
+              j := j + 1;
+              suma := suma + a[j];
+          until (j = n) or (suma >= k);
+          rasta := (suma = k);
+      until (i = n) or rasta;
 
-.. code-block:: unicode_cpp
+  .. tab:: C++
 
-  bool rasta = false;
-  int atsPr, atsPab;
-  for(int i = 0; i < n && !rasta; i++) {
-      int suma = 0;
-      for(int j = i; j < n && !rasta; j++) {
-          suma += a[j];
-          if (suma == K) {
-              atsPr = i;
-              atsPab = j;
-              rasta = true;
+    .. code-block:: cpp
+
+      bool rasta = false;
+      int atsPr, atsPab;
+      for(int i = 0; i < n && !rasta; i++) {
+          int suma = 0;
+          for(int j = i; j < n && !rasta; j++) {
+              suma += a[j];
+              if (suma == K) {
+                  atsPr = i;
+                  atsPab = j;
+                  rasta = true;
+              }
           }
       }
-  }
 
 Šį algoritmą sudaro du ciklai, antrasis jų pirmojo viduje, ir abiejų
 ilgis tiesiogiai priklauso nuo :math:`n`. Blogiausiu atveju abiejuose cikluose
@@ -478,38 +502,44 @@ už :math:`k` (tai tokia ji tapo po paskutinio žingsnio), intervalą siaurinsim
 Jei po kurio nors žingsnio *suma* taps lygi :math:`k`, algoritmas iškart
 nutrauks darbą.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  suma := a[1];
-  i := 1;
-  j := 1;
-  while (suma <> k) and (j < n) do
-      if suma < k then begin
-          j := j + 1;
-          suma := suma + a[j];
-      end else begin
-          suma := suma - a[i];
-          i := i + 1;
-      end;
-  rasta := (suma = k);
+  .. tab:: Paskalis
 
-.. code-block:: unicode_cpp
+    .. code-block:: unicode_pascal
 
-  int suma = a[0];
-  int i = 0, j = 0;
-  while (suma != K && j < n) {
-      if (suma < K) {
-          j++;
-          if (j < n) {
-              suma += a[j];
+      suma := a[1];
+      i := 1;
+      j := 1;
+      while (suma <> k) and (j < n) do
+          if suma < k then begin
+              j := j + 1;
+              suma := suma + a[j];
+          end else begin
+              suma := suma - a[i];
+              i := i + 1;
+          end;
+      rasta := (suma = k);
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int suma = a[0];
+      int i = 0, j = 0;
+      while (suma != K && j < n) {
+          if (suma < K) {
+              j++;
+              if (j < n) {
+                  suma += a[j];
+              }
+          }
+          else if (suma > K) {
+              suma -= a[i];
+              i++;
           }
       }
-      else if (suma > K) {
-          suma -= a[i];
-          i++;
-      }
-  }
-  bool rasta = suma == K;
+      bool rasta = suma == K;
 
 Kadangi vienu žingsniu padidinamas tik vienas iš indeksų ir kiekvienas
 iš indeksų gali būti padidintas ne daugiau kaip :math:`n` kartų, daugių
@@ -608,7 +638,7 @@ Vieni ekspertai spėjo, kad geriausiu atveju uždavinio sprendimas užtruks
 apie ketverius metus. Kiti mokslininkai netgi teigė, kad uždavinio
 sprendimas užtruks ilgiau nei gyvuos Visata. Nors visada lieka
 atsitiktinio sudėliojimo tikimybė, buvo apskaičiuota, kad tikimybė vienu
-bandymu atsitiktinai sudėlioti šią dėlionę yra :math:`1` iš :math:`10^{500}` 
+bandymu atsitiktinai sudėlioti šią dėlionę yra :math:`1` iš :math:`10^{500}`
 (palyginimui: tikimybė išlošti Didžiosios Britanijos nacionalinėje
 loterijoje yra :math:`1` iš :math:`14 \cdot 10^6`).
 
