@@ -336,7 +336,7 @@ saugoti, kur lentoje statomos valdovės.
               then begin
                   eilutė[i] := true;
                   įstr1[i + k] := true;
-                  įstr2[i – k] := true;
+                  įstr2[i - k] := true;
                   { bandoma pastatyti likusias valdoves }
                   statyk(k + 1, n);
                   eilutė[i] := false;

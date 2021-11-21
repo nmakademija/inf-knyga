@@ -193,7 +193,7 @@ viršūnes reikės sujungti briauna. Tai atlieka tokia procedūra:
 
 .. code-block:: unicode_pascal
 
-  procedure papildyk\_briauna(var g : grafas;
+  procedure papildyk_briauna(var g : grafas;
                              u, v : integer);
   begin
       g.briauna[u, v] := true;
