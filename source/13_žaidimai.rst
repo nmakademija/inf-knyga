@@ -472,166 +472,172 @@ būti negali), tad pozicijas vertinsime ne skaičiais, o loginėmis
 reikšmėmis: „minimali“ pozicijos vertė bus ``false``,
 „maksimali“ – ``true``.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const M = 13; { šį skaičių pasiekęs ar viršijęs, žaidėjas laimi }
-  type Tpozicija = record
-           s, d : integer;
-           { s ir d nusako konkrečią žaidimo poziciją }
-       end;
-  procedure atlik_ėjimą(sukti_pirmyn : boolean;
-                        var p : Tpozicija);
-  begin
-      if sukti_pirmyn then
-          p.d := (p.d + 4) mod 6 + 1
-      else
-          p.d := p.d mod 6 + 1;
-      p.s := p.s + p.d;
-  end;
-  procedure atšauk_ėjimą(sukti_pirmyn : boolean;
-                         var p : Tpozicija);
-  begin
-      p.s := p.s - p.d;
-      if sukti_pirmyn then
-          p.d := p.d  mod 6 + 1
-      else
-          p.d := (p.d + 4) mod 6 + 1;
-  end;
-  function Min(pozicija : TPozicija) : boolean; forward;
-  function Max(pozicija : TPozicija) : boolean;
-  { randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
-    jei ėjimą iš jos atlieka pirmasis (maksimizuojantis) žaidėjas }
-  var sukti_pirmyn, įvertis : boolean;
-  begin
-      if pozicija.s >= M then { jei žaidimas baigtas }
-          Max := false
-          { nes paskutinį ėjimą atliko antrasis žaidėjas }
-      else begin
-          Max := false;
-          for sukti_pirmyn := false to true do begin
-               atlik_ėjimą(sukti_pirmyn, pozicija);
-               įvertis := Min(pozicija);
-               if (Max = false) and (įvertis = true)
-               then { jei Max < įvertis }
-                   Max := įvertis;
-               atšauk_ėjimą(sukti_pirmyn, pozicija);
-          end;
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const M = 13; { šį skaičių pasiekęs ar viršijęs, žaidėjas laimi }
+      type Tpozicija = record
+              s, d : integer;
+              { s ir d nusako konkrečią žaidimo poziciją }
+          end;
+      procedure atlik_ėjimą(sukti_pirmyn : boolean;
+                           var p : Tpozicija);
+      begin
+         if sukti_pirmyn then
+             p.d := (p.d + 4) mod 6 + 1
+         else
+             p.d := p.d mod 6 + 1;
+         p.s := p.s + p.d;
+      end;
+      procedure atšauk_ėjimą(sukti_pirmyn : boolean;
+                            var p : Tpozicija);
+      begin
+         p.s := p.s - p.d;
+         if sukti_pirmyn then
+             p.d := p.d  mod 6 + 1
+         else
+             p.d := (p.d + 4) mod 6 + 1;
+      end;
+      function Min(pozicija : TPozicija) : boolean; forward;
+      function Max(pozicija : TPozicija) : boolean;
+      { randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
+       jei ėjimą iš jos atlieka pirmasis (maksimizuojantis) žaidėjas }
+      var sukti_pirmyn, įvertis : boolean;
+      begin
+         if pozicija.s >= M then { jei žaidimas baigtas }
+             Max := false
+             { nes paskutinį ėjimą atliko antrasis žaidėjas }
+         else begin
+             Max := false;
+             for sukti_pirmyn := false to true do begin
+                  atlik_ėjimą(sukti_pirmyn, pozicija);
+                  įvertis := Min(pozicija);
+                  if (Max = false) and (įvertis = true)
+                  then { jei Max < įvertis }
+                      Max := įvertis;
+                  atšauk_ėjimą(sukti_pirmyn, pozicija);
+             end;
+         end;
+      end;
 
 
-  function Min(pozicija : TPozicija) : boolean;
-  { randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
-    jei ėjimą iš jos atlieka antrasis (minimizuojantis) žaidėjas }
-  var sukti_pirmyn, įvertis : boolean;
-  begin
-      if pozicija.s >= M then { jei žaidimas baigtas }
-          Min := true
-          { nes paskutinį ėjimą atliko pirmasis žaidėjas }
-      else begin
-          Min := true;
-          for sukti_pirmyn := false to true do begin
-              atlik_ėjimą(sukti_pirmyn, pozicija);
-              įvertis := Max(pozicija);
-              if (Min = true) and (įvertis = false)
-              then { jei Min > įvertis }
-                  Min := įvertis;
-              atšauk_ėjimą(sukti_pirmyn, pozicija);
-           end;
-      end;
-  end;
+      function Min(pozicija : TPozicija) : boolean;
+      { randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
+       jei ėjimą iš jos atlieka antrasis (minimizuojantis) žaidėjas }
+      var sukti_pirmyn, įvertis : boolean;
+      begin
+         if pozicija.s >= M then { jei žaidimas baigtas }
+             Min := true
+             { nes paskutinį ėjimą atliko pirmasis žaidėjas }
+         else begin
+             Min := true;
+             for sukti_pirmyn := false to true do begin
+                 atlik_ėjimą(sukti_pirmyn, pozicija);
+                 įvertis := Max(pozicija);
+                 if (Min = true) and (įvertis = false)
+                 then { jei Min > įvertis }
+                     Min := įvertis;
+                 atšauk_ėjimą(sukti_pirmyn, pozicija);
+              end;
+         end;
+      end;
 
-  function MiniMax(žaidėjas : integer;
-                   pozicija : Tpozicija) : boolean;
-  { randa pozicijos įvertį („true“, jei tai laiminti pirmojo žaidėjo pozicija
-    ir „false“ priešingu atveju }
-  begin
-      if žaidėjas = 1 then
-          { jei ėjimą atliks pirmasis (maksimizuojantis) žaidėjas }
-          MiniMax := Max(pozicija)
-      else
-          MiniMax := Min(pozicija);
-  end;
+      function MiniMax(žaidėjas : integer;
+                      pozicija : Tpozicija) : boolean;
+      { randa pozicijos įvertį („true“, jei tai laiminti pirmojo žaidėjo pozicija
+       ir „false“ priešingu atveju }
+      begin
+         if žaidėjas = 1 then
+             { jei ėjimą atliks pirmasis (maksimizuojantis) žaidėjas }
+             MiniMax := Max(pozicija)
+         else
+             MiniMax := Min(pozicija);
+      end;
 
-.. code-block:: unicode_cpp
+  .. tab:: C++
 
-  const int M = 13; // šį skaičių pasiekęs ar viršijęs, žaidėjas laimi
+    .. code-block:: cpp
 
-  struct tPozicija {
-      int s, d; // s ir d nusako konkrečią žaidimo poziciją
-  };
+      const int M = 13; // šį skaičių pasiekęs ar viršijęs, žaidėjas laimi
 
-  void atlikEjima (bool suktiPirmyn, tPozicija &p) {
-      if (suktiPirmyn)
-          p.d = (p.d + 4) % 6 + 1;
-      else
-          p.d = p.d % 6  + 1;
-      p.s += p.d;
-  }
+      struct tPozicija {
+          int s, d; // s ir d nusako konkrečią žaidimo poziciją
+      };
 
-  void atsaukEjima (bool suktiPirmyn, tPozicija &p) {
-      p.s -= p.d;
-      if (suktiPirmyn)
-          p.d = p.d % 6 + 1;
-      else
-          p.d = (p.d + 4) % 6 + 1;
-  }
+      void atlikEjima (bool suktiPirmyn, tPozicija &p) {
+          if (suktiPirmyn)
+              p.d = (p.d + 4) % 6 + 1;
+          else
+              p.d = p.d % 6  + 1;
+          p.s += p.d;
+      }
 
-  bool minIvertis (tPozicija pozicija);
+      void atsaukEjima (bool suktiPirmyn, tPozicija &p) {
+          p.s -= p.d;
+          if (suktiPirmyn)
+              p.d = p.d % 6 + 1;
+          else
+              p.d = (p.d + 4) % 6 + 1;
+      }
 
-  bool maxIvertis (tPozicija pozicija) {
-      /*
-          randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
-          jei ėjimą iš jos atlieka pirmasis (maksimizuojantis) žaidėjas
-      */
+      bool minIvertis (tPozicija pozicija);
 
-      if (pozicija.s >= M) // jei žaidimas baigtas
-          return false; // nes paskutinį ėjimą atliko antrasis žaidėjas
-      else {
-          bool grazinamasIvertis = false;
-          bool kryptys[] = {false, true};
-          for(bool suktiPirmyn : kryptys) { {
-              atlikEjima(suktiPirmyn, pozicija);
-              bool ivertis = minIvertis(pozicija);
-              if (!grazinamasIvertis && ivertis) // jei grazinamasIvertis < ivertis
-                  grazinamasIvertis = ivertis;
-              atsaukEjima(suktiPirmyn, pozicija);
+      bool maxIvertis (tPozicija pozicija) {
+          /*
+              randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
+              jei ėjimą iš jos atlieka pirmasis (maksimizuojantis) žaidėjas
+          */
+
+          if (pozicija.s >= M) // jei žaidimas baigtas
+              return false; // nes paskutinį ėjimą atliko antrasis žaidėjas
+          else {
+              bool grazinamasIvertis = false;
+              bool kryptys[] = {false, true};
+              for(bool suktiPirmyn : kryptys) { {
+                  atlikEjima(suktiPirmyn, pozicija);
+                  bool ivertis = minIvertis(pozicija);
+                  if (!grazinamasIvertis && ivertis) // jei grazinamasIvertis < ivertis
+                      grazinamasIvertis = ivertis;
+                  atsaukEjima(suktiPirmyn, pozicija);
+              }
           }
       }
-  }
 
-  bool minIvertis (tPozicija pozicija) {
-      /*
-          randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
-          jei ėjimą iš jos atlieka antrasis (minimizuojantis) žaidėjas
-      */
+      bool minIvertis (tPozicija pozicija) {
+          /*
+              randa pozicijos įvertį (ar tai laiminti pirmojo žaidėjo pozicija),
+              jei ėjimą iš jos atlieka antrasis (minimizuojantis) žaidėjas
+          */
 
-      if (pozicija.s >= M) // jei žaidimas baigtas
-          return true; // nes paskutinį ėjimą atliko pirmasis žaidėjas
-      else {
-          bool grazinamasIvertis = true;
-          bool kryptys[] = {false, true};
-          for(bool suktiPirmyn : kryptys) { {
-              atlikEjima(suktiPirmyn, pozicija);
-              bool ivertis = maxIvertis(pozicija);
-              if (grazinamasIvertis && !ivertis) // jei grazinamasIvertis > ivertis
-                  grazinamasIvertis = ivertis;
-              atsaukEjima(suktiPirmyn, pozicija);
+          if (pozicija.s >= M) // jei žaidimas baigtas
+              return true; // nes paskutinį ėjimą atliko pirmasis žaidėjas
+          else {
+              bool grazinamasIvertis = true;
+              bool kryptys[] = {false, true};
+              for(bool suktiPirmyn : kryptys) { {
+                  atlikEjima(suktiPirmyn, pozicija);
+                  bool ivertis = maxIvertis(pozicija);
+                  if (grazinamasIvertis && !ivertis) // jei grazinamasIvertis > ivertis
+                      grazinamasIvertis = ivertis;
+                  atsaukEjima(suktiPirmyn, pozicija);
+              }
           }
       }
-  }
 
-  bool miniMax (int zaidejas, tPozicija pozicija) {
-      /*
-          randa pozicijos įvertį ("true", jei tai laiminti
-          pirmojo žaidėjo pozicija ir "false" priešingu atveju
-      */
+      bool miniMax (int zaidejas, tPozicija pozicija) {
+          /*
+              randa pozicijos įvertį ("true", jei tai laiminti
+              pirmojo žaidėjo pozicija ir "false" priešingu atveju
+          */
 
-      if (zaidejas == 1) // jei ėjimą atliks pirmasis (maksimizuojantis) žaidėjas
-          return maxIvertis(pozicija);
-      else
-          return minIvertis(pozicija);
-  }
+          if (zaidejas == 1) // jei ėjimą atliks pirmasis (maksimizuojantis) žaidėjas
+              return maxIvertis(pozicija);
+          else
+              return minIvertis(pozicija);
+      }
 
 .. _skyrelis-euristinis-pozicijų-vertinimas:
 
