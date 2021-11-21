@@ -345,5 +345,5 @@ numfig = True
 
 def setup(app):
     from unicode_pascal import UnicodeDelphiLexer
-    lexer = UnicodeDelphiLexer()
+    lexer = UnicodeDelphiLexer
     app.add_lexer('unicode_pascal', lexer)
