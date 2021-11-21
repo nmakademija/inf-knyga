@@ -565,7 +565,7 @@ kelionės pradžios.
          { jei maršruto nėra, atvykimas = BEGALINIS }
       end;
 
-.. tab:: C++
+  .. tab:: C++
 
     .. code-block:: cpp
 
