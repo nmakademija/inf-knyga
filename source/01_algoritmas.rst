@@ -402,20 +402,19 @@ Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
     .. code-block:: cpp
 
       bool rasta = false;
-      int atsPr, atsPab;
-      for(int i = 0; i < n && !rasta; i++) {
-          for(int j = i; j < n && !rasta; j++) {
-              int suma = 0;
-              for(int k = i; k <= j; k++) {
-                  suma += a[k];
-              }
-              if (suma == K) {
-                  atsPr = i;
-                  atsPab = j;
-                  rasta = true;
-              }
-          }
-      }
+      int i = -1;
+      do {
+          int j = i;
+          i++;
+              do {
+                  j++;
+                  int suma = 0;
+                  for (int l = i; l <= j; l++) {
+                      suma += a[l];
+                  }
+                  rasta = (suma == k);
+              } while (j < n-1 && !rasta);
+      } while (i < n-1 && !rasta);
 
 Jei algoritmui baigus darbą kintamojo rasta reikšmė bus lygi true, tai
 :math:`i` ir :math:`j` bus ieškomi indeksai. Suskaičiavę, kiek elementarių
