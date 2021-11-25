@@ -48,18 +48,10 @@ clean:
 
 $(SPHINXBUILD): env
 	env/bin/pip install sphinx
-	env/bin/pip install -e 'hg+https://vakaras@bitbucket.org/vakaras/sphinx-numfig#egg=sphinx-numfig'
+	env/bin/pip install -r requirements.txt
 
-env: .virtualenv
-	python3 .virtualenv/source/virtualenv.py env
-
-.virtualenv:
-	mkdir -p .virtualenv
-	wget -c \
-		https://pypi.python.org/packages/source/v/virtualenv/virtualenv-14.0.5.tar.gz \
-		-O .virtualenv/archive.tar.gz
-	tar -xvf .virtualenv/archive.tar.gz
-	mv virtualenv-* .virtualenv/source
+env:
+	python3 -m venv env
 
 html: $(SPHINXBUILD)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

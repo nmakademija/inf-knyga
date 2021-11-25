@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.imgmath',
     'sphinx.ext.ifconfig',
+    'sphinx_tabs.tabs',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -344,5 +345,5 @@ numfig = True
 
 def setup(app):
     from unicode_pascal import UnicodeDelphiLexer
-    lexer = UnicodeDelphiLexer()
+    lexer = UnicodeDelphiLexer
     app.add_lexer('unicode_pascal', lexer)

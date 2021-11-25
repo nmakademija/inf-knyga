@@ -79,12 +79,23 @@ Iš tiesų, jei medis šakninis, tai kiekviena viršūnė, išskyrus
 medžio šaknį, turi lygiai vieną pirminę viršūnę. Todėl medį
 visiškai apibrėžia jau anksčiau minėtas pirminumo masyvas:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAX = ...; { maksimalus medžio viršūnių skaičius }
-  type masyvas = array [1..MAX] of integer;
-  var pirminė : masyvas; { kiekvienai viršūnei įsimenama jos
-                           pirminė viršūnė }
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAX = ...; { maksimalus medžio viršūnių skaičius }
+      type masyvas = array [1..MAX] of integer;
+      var pirminė : masyvas; { kiekvienai viršūnei įsimenama jos
+                              pirminė viršūnė }
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...; // maksimalus medžio viršūnių skaičius
+      int pirmine[MAXN];    // kiekvienai viršūnei įsimenama jos pirminė viršūnė
 
 .. code-block:: unicode_cpp
 
@@ -103,14 +114,25 @@ Siekdami efektyviai rasti tiek pirminę, tiek ir antrines viršūnes,
 kiekvienos viršūnės pirminė viršūnė ir antrinių viršūnių
 sąrašas:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  type viršūnė = record
-           pirminė : integer;
-           antr_sk : integer; { antrinių viršūnių skaičius }
-           antr_sąr : array [1..MAX] of integer
-       end;
-       medis = array [1..MAX] of viršūnė;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      type viršūnė = record
+              pirminė : integer;
+              antr_sk : integer; { antrinių viršūnių skaičius }
+              antr_sąr : array [1..MAX] of integer
+          end;
+          medis = array [1..MAX] of viršūnė;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int pirmine[MAXN];
+      vector<int> antrSar[MAXN]; // antrinių viršūnių sąrašas
 
 .. code-block:: unicode_cpp
 
@@ -378,56 +400,164 @@ prijungtosios viršūnės kaimynių prijungimo kainos. Atliekamų
 Toliau pateiktame algoritme grafas vaizduojamas kaimynystės matrica, o
 minimalus jungiamasis medis – pirminumo masyvu.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const BEGALINIS = MAXINT;
-        MAXN = ...; { maksimalus viršūnių skaičius }
-  type grafas = record
-           n : longint; { viršūnių skaičius }
-           svoris : array [1..MAXN,
-                           1..MAXN] of integer;
-       end;
-       masyvas = array [1..MAXN] of integer;
-       logmas  = array [1..MAXN] of boolean;
-  procedure Primo(var G : grafas;
-                  var pirminė : masyvas);
-  { ieškomasis medis grąžinamas masyve „pirminė“ }
-  var prijungta : logmas;
-      kaina : masyvas;
-      v, u, min : integer;
-  begin
-      { įrašomos pradinės masyvų reikšmės }
-      for u := 1 to G.n do begin
-          kaina[u] := BEGALINIS;
-          pirminė[u] := -1;
-          prijungta[u] := false;
-      end;
-      v := 1;
-      kaina[v] := 0; { pradėsime nuo pirmos viršūnės }
-      while v <> 0 do begin
-          { jei v <> 0, tai rasta viršūnė, kurią galima prijungti }
-          prijungta[v] := true;
-          for u := 1 to G.n do { nagrinėjamos kaimynės }
-              if (not prijungta[u]) and
-                 (G.svoris[v, u] < BEGALINIS) and
-                 (kaina[u] > G.svoris[v, u])
-              then begin { viršūnę u verčiau jungti prie v }
-                  kaina[u] := G.svoris[v, u];
-                  pirminė[u] := v;
-              end;
-          { randama tolesnė kandidatė -
-          dar neprijungta viršūnė su mažiausia prijungimo kaina }
-          v := 0;
-          min := BEGALINIS;
-          for u := 1 to G.n do
-             if (not prijungta[u]) and (kaina[u] < min)
-             then begin
-                 v := u;
-                 min := kaina[u];
-             end;
-           { jei jokia viršūnė nerasta, tai v = 0 ir ciklas nutraukiamas }
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const BEGALINIS = MAXINT;
+           MAXN = ...; { maksimalus viršūnių skaičius }
+      type grafas = record
+              n : longint; { viršūnių skaičius }
+              svoris : array [1..MAXN,
+                              1..MAXN] of integer;
+          end;
+          masyvas = array [1..MAXN] of integer;
+          logmas  = array [1..MAXN] of boolean;
+      procedure Primo(var G : grafas;
+                     var pirminė : masyvas);
+      { ieškomasis medis grąžinamas masyve „pirminė“ }
+      var prijungta : logmas;
+         kaina : masyvas;
+         v, u, min : integer;
+      begin
+         { įrašomos pradinės masyvų reikšmės }
+         for u := 1 to G.n do begin
+             kaina[u] := BEGALINIS;
+             pirminė[u] := -1;
+             prijungta[u] := false;
+         end;
+         v := 1;
+         kaina[v] := 0; { pradėsime nuo pirmos viršūnės }
+         while v <> 0 do begin
+             { jei v <> 0, tai rasta viršūnė, kurią galima prijungti }
+             prijungta[v] := true;
+             for u := 1 to G.n do { nagrinėjamos kaimynės }
+                 if (not prijungta[u]) and
+                    (G.svoris[v, u] < BEGALINIS) and
+                    (kaina[u] > G.svoris[v, u])
+                 then begin { viršūnę u verčiau jungti prie v }
+                     kaina[u] := G.svoris[v, u];
+                     pirminė[u] := v;
+                 end;
+              { randama tolesnė kandidatė -
+             dar neprijungta viršūnė su mažiausia prijungimo kaina }
+             v := 0;
+             min := BEGALINIS;
+             for u := 1 to G.n do
+                if (not prijungta[u]) and (kaina[u] < min)
+                then begin
+                    v := u;
+                    min := kaina[u];
+                end;
+              { jei jokia viršūnė nerasta, tai v = 0 ir ciklas nutraukiamas }
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      /*
+          Pastaba: pirmiau pateikiamas Primo algoritmo kodas, analogiškas kodui, užrašytam Paskalio kalba,
+          o žemiau - efektyvus, naudojantis duomenų struktūrą priority_queue (kaip ir efektyvioje
+          Dijkstros algoritmo realizacijoje).
+          Taip pat verta paminėti, kad olimpiadose patogiausia naudoti Kruskalio algoritmą MJM rasti,
+          kurio realizacijoje naudojama duomenų struktūra "nesikertančių aibių sąjunga" (trumpinama, DSU).
+          Apie Kruskalio algoritmą galite pasiskaityti čia: https://cp-algorithms.com/graph/mst_kruskal_with_dsu.html
+      */
+
+      const int BEGALINIS = ...; // kažkoks pakankamai didelis skaičius, pavyzdžiui 1e9
+      const int MAXN = ...;      // maksimalus viršūnių skaičius
+
+      int n;                     // viršūnių skaičius
+      int svoris[MAXN][MAXN];
+      int pirmine[MAXN];
+      vector<int> antrSar[MAXN]; // antrinių viršūnių sąrašas
+      bool prijungta[MAXN];
+      int kaina[MAXN];
+
+      void primo () {
+          // ieškomas medis grąžinamas masyve "pirmine"
+
+          // įrašomos pradinės masyvų reikšmės
+          for (int u = 0; u < n; u++) {
+              kaina[u] = BEGALINIS;
+              pirmine[u] = -1;
+              prijungta[u] = false;
+          }
+
+          int v = 0;
+          kaina[v] = 0; // pradėsime nuo viršūnės su numeriu 0
+
+          while (v != -1) {
+              // jei v != -1, tai rasta viršūnė, kurią galima prijungti
+              prijungta[v] = true;
+
+              for (int u = 0; u < n; u++) { // nagrinėjamos kaimynės
+                  if (!prijungta[u] && svoris[v][u] < BEGALINIS && kaina[u] > svoris[v][u]) {
+                      // viršūnę u verčiau prijungti prie v
+                      kaina[u] = svoris[v][u];
+                      pirmine[u] = v;
+                  }
+              }
+
+              // randama tolesnė kandidatė - dar neprijungta viršūnė su mažiausia prijungimo kaina
+              v = -1;
+              int minKaina = BEGALINIS;
+              for (int u = 0; u < n; u++) {
+                  if (!prijungta[u] && kaina[u] < minKaina) {
+                      v = u;
+                      minKaina = kaina[u];
+                  }
+              }
+
+              // jei jokia viršūnė nerasta, tai v = -1 ir ciklas nutraukiamas
+
+          }
+      }
+
+
+
+      // Primo algoritmo realizacija, naudojanti priority_queue
+
+      vector<pair<int, int>> adj[MAXN];
+      /*
+          adj[i] yra i-tosios viršūnės kaimynų sąrašas, kur
+          adj[i][j].first yra j-tosios kaimynės numeris
+          adj[i][j].second yra briaunos, jungiančios i-tąją viršūnę su jos j-tąja kaimyne, svoris
+      */
+
+      void primo () {
+          // įrašomos pradinės masyvų reikšmės
+          for (int u = 0; u < n; u++) {
+              kaina[u] = BEGALINIS;
+              pirmine[u] = -1;
+              prijungta[u] = false;
+          }
+
+          kaina[0] = 0;
+          priority_queue<pair<int, int>, vector<pair<int,int>>, greater<pair<int,int>>> q; // priority_queue, kurios top() elementas visad yra mažiausias
+          q.push({kaina[p], p}); // į q visados dedam poras {kaina[i], i}, nes tada q.top() elementas visad būs mažiausios kainos
+
+          while (!q.empty()) {
+              int v = q.top().second;
+              if (!prijungta[v]) {
+                  prijungta[v] = true;
+                  for (auto p : adj[v]) { // einame per viršūnės v kaimynus
+                      int u = p.first;  // kaimynės numeris
+                      int w = p.second; // briaunos tarp v ir u svoris
+                      if (kaina[u] > w) {
+                          // verčiau į u eiti per v
+                          kaina[u] = w;
+                          pirmine[u] = v;
+                          q.push ({kaina[u], u});
+                      }
+                  }
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -596,63 +726,121 @@ komutatoriai nuo 1 iki :math:`m`, o kompiuteriai – nuo
 (:math:`k` ir :math:`m`). Grafas vaizduojamas briaunų svorių matrica
 (žr. skyrelį :ref:`skyrelis-svoriniai-grafai`).
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const BEGALINIS = MAXINT;
-        MAXM = ...; { maksimalus komutatorių skaičius }
-        MAXK = ...; { maksimalus kompiuterių skaičius }
-  type masyvas = array [1..MAXM] of integer;
-       jungimas = record
-           įrenginysA, įrenginysB : integer;
-       end;
-       jungimų_mas =
-           array [1..MAXM + MAXK] of jungimas;
-       kainų_mas = array [1..MAXM + MAXK,
-                          1..MAXM + MAXK] of integer;
-  procedure rask_jungimus(var kaina : kainų_mas;
-                          m, k : integer;
-                          var jung_sk,
-                              jung_kaina : integer;
-                          var jungimai : jungimų_mas);
-  { k – kompiuterių, m – komutatorių skaičius, „kaina“ – įrenginių jungimo
-    kainų masyvas; atsakymas pateikiamas masyve „jungimai“ }
-      procedure junk(a, b : integer);
-      { įrenginys a sujungiamas su įrenginiu b }
-      begin
-          jung_sk := jung_sk + 1;
-          jungimai[jung_sk].įrenginysA := a;
-          jungimai[jung_sk].įrenginysB := b;
-          jung_kaina := jung_kaina + kaina[a, b];
-      end;
-  var i, j, t : integer;
-      g : grafas;
-      pirminė : masyvas;
-  begin
-      jung_sk := 0; jung_kaina := 0;
-      { prijungiame kiekvieną kompiuterį prie „artimiausio“
-        komutatoriaus (kompiuteriai sunumeruoti nuo (m + 1)
-        iki (m + k), komutatoriai - nuo 1 iki m) }
-      for i := m + 1 to m + k do begin
-          t := 1;
-          for j := 1 to m do
-              if kaina[i, t] > kaina[i, j] then t := j;
-          junk(i, t);
-      end;
-      { komutatorių jungimui sudarome grafą ir randame
-        minimalų jungiamąjį medį }
-      g.n := m;
-      for i := 1 to m do
-          for j := 1 to m do
-              if i <> j then
-                  g.svoris[i, j] := kaina[i, j]
-              else { jei i = j, tai briaunos (kilpos) nėra }
-                  g.svoris[i, j] := BEGALINIS;
-      { pagal Primo algoritmą randamas MJM }
-      Primo(g, pirminė);
-      { medžio briaunos yra (i, pirminė[i]), visoms i, išskyrus 1 }
-      for i := 2 to g.n do
-          junk(i, pirminė[i]);
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const BEGALINIS = MAXINT;
+           MAXM = ...; { maksimalus komutatorių skaičius }
+           MAXK = ...; { maksimalus kompiuterių skaičius }
+      type masyvas = array [1..MAXM] of integer;
+          jungimas = record
+              įrenginysA, įrenginysB : integer;
+          end;
+          jungimų_mas =
+              array [1..MAXM + MAXK] of jungimas;
+          kainų_mas = array [1..MAXM + MAXK,
+                             1..MAXM + MAXK] of integer;
+      procedure rask_jungimus(var kaina : kainų_mas;
+                             m, k : integer;
+                             var jung_sk,
+                                 jung_kaina : integer;
+                             var jungimai : jungimų_mas);
+      { k – kompiuterių, m – komutatorių skaičius, „kaina“ – įrenginių jungimo
+        kainų masyvas; atsakymas pateikiamas masyve „jungimai“ }
+         procedure junk(a, b : integer);
+         { įrenginys a sujungiamas su įrenginiu b }
+         begin
+             jung_sk := jung_sk + 1;
+             jungimai[jung_sk].įrenginysA := a;
+             jungimai[jung_sk].įrenginysB := b;
+             jung_kaina := jung_kaina + kaina[a, b];
+         end;
+      var i, j, t : integer;
+         g : grafas;
+         pirminė : masyvas;
+      begin
+         jung_sk := 0; jung_kaina := 0;
+         { prijungiame kiekvieną kompiuterį prie „artimiausio“
+           komutatoriaus (kompiuteriai sunumeruoti nuo (m + 1)
+           iki (m + k), komutatoriai - nuo 1 iki m) }
+         for i := m + 1 to m + k do begin
+             t := 1;
+             for j := 1 to m do
+                 if kaina[i, t] > kaina[i, j] then t := j;
+             junk(i, t);
+         end;
+         { komutatorių jungimui sudarome grafą ir randame
+           minimalų jungiamąjį medį }
+         g.n := m;
+         for i := 1 to m do
+             for j := 1 to m do
+                 if i <> j then
+                     g.svoris[i, j] := kaina[i, j]
+                 else { jei i = j, tai briaunos (kilpos) nėra }
+                     g.svoris[i, j] := BEGALINIS;
+         { pagal Primo algoritmą randamas MJM }
+         Primo(g, pirminė);
+         { medžio briaunos yra (i, pirminė[i]), visoms i, išskyrus 1 }
+         for i := 2 to g.n do
+             junk(i, pirminė[i]);
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int BEGALINIS = ...; // kažkoks pakankamai didelis skaičius, pavyzdžiui 1e9
+      const int MAXM = ...;      // maksimalus komutatorių skaičius
+      const int MAXK = ...;      // maksimalus kompiuterių skaičius
+
+      int k;                                 // kompiuterių skaičius
+      int m;                                 // komutatorių skaičius
+      pair<int, int> jungimai[MAXM + MAXK];  // masyvas, kuriame bus pateikiamas atsakymas
+      int kaina[MAXM + MAXK][MAXM + MAXK];   // įrenginių jungimo kainų masyvas
+      int jungSk;
+      int jungKaina;
+
+      void junk (int a, int b) {
+          // įrenginys a sujungiamas su įrenginiu b
+          jungimai[jungSk].first = a;
+          jungimai[jungSk].second = b;
+          junkSk++;
+          jungKaina += kaina[a][b];
+      }
+
+      void raskJungimus () {
+          jungSk = 0;
+          jungKaina = 0;
+
+          /*
+              prijungiame kiekvieną kompiuterį prie "artimiausio" komutatoriaus
+              (kompiuteriai sunumeruoti nuo m iki m+k-1, komutatoriai - nuo 0 iki m-1
+          */
+
+          for (int i = m; i < m+k; i++) {
+              int t = 0;
+              for (int j = 0; j < m; j++)
+                  if (kaina[i][t] > kaina[j][t])
+                      t = j;
+              junk(i, t);
+          }
+
+          // komutatorių jungimui sudarome grafą ir randame minimalų jungiamąjį medį
+          n = m;
+          for (int i = 0; i < m; i++)
+              for (int j = 0; j < m; j++)
+                  if (i != j)
+                      svoris[i][j] = (i != j ? kaina[i][j] : BEGALINIS);
+          // pagal Primo algoritmą randamas MJM
+          Primo ();
+
+          // medžio briaunos yra (i, pirmine[i]), visoms i, išskyrus 0
+          for (int i = 1; i < n; i++)
+              junk (i, pirmine[i]);
+      }
 
 .. code-block:: unicode_cpp
 

@@ -221,47 +221,86 @@ lygūs 0, ir ją vis papildyti iš grafo trinant lankus. Tam panaudosime
 *eilės* duomenų struktūrą, aprašytą :ref:`skyrelis-paieška-platyn`
 skyrelyje.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = ...;       { maksimalus viršūnių skaičius }
-        MAXB = MAXN*MAXN; { maksimalus lankų skaičius }
-  type viršūnė = record
-           k : integer;         { kaimynių skaičius  ir sąrašas }
-           ksąrašas : array [1..MAXN] of integer;
-       end;
-       grafas = record
-           n : integer;                 { viršūnių skaičius }
-           laipsnis : array [1..MAXN] of integer;
-                                        { įėjimo laipsnis }
-           vir : array [1..MAXN] of viršūnė;
-                                        { viršūnių sąrašas }
-       end;
-  procedure topologinis_rikiavimas(var g : grafas;
-                                   var seka : masyvas);
-  { topologinis išrikiavimas įrašomas į masyvą seka }
-  var v, u, i, nr : integer;
-      eil : eilė;
-  begin
-      išvalyk(eil);
+  .. tab:: Paskalis
 
-      { į eilę įtraukiamos viršūnės, kurių įėjimo laipsniai lygūs 0 }
-      for v := 1 to g.n do
-          if g.laipsnis[v] = 0 then
-              įdėk(eil, v);
-      nr := 0; { išrikiuotų viršūnių sekos indeksas }
-      while not tuščia(eil) do begin
-          v := išimk(eil);
-          nr := nr + 1;
-          seka[nr] := v; { v įrašoma į seką }
-          { „ištrinami“ iš v išeinantys lankai ir papildoma eilė }
-          for i := 1 to g.vir[v].k do begin
-              u := g.vir[v].ksąrašas[i]; { kaimynė }
-              g.laipsnis[u] := g.laipsnis[u] - 1;
-              if g.laipsnis[u] = 0 then
-                  įdėk(eil, u);
-          end;
-      end;
-  end;
+    .. code-block:: unicode_pascal
+
+      const MAXN = ...;       { maksimalus viršūnių skaičius }
+           MAXB = MAXN*MAXN; { maksimalus lankų skaičius }
+      type viršūnė = record
+              k : integer;         { kaimynių skaičius  ir sąrašas }
+              ksąrašas : array [1..MAXN] of integer;
+          end;
+          grafas = record
+              n : integer;                 { viršūnių skaičius }
+              laipsnis : array [1..MAXN] of integer;
+                                           { įėjimo laipsnis }
+              vir : array [1..MAXN] of viršūnė;
+                                           { viršūnių sąrašas }
+          end;
+      procedure topologinis_rikiavimas(var g : grafas;
+                                      var seka : masyvas);
+      { topologinis išrikiavimas įrašomas į masyvą seka }
+      var v, u, i, nr : integer;
+         eil : eilė;
+      begin
+         išvalyk(eil);
+
+          { į eilę įtraukiamos viršūnės, kurių įėjimo laipsniai lygūs 0 }
+         for v := 1 to g.n do
+             if g.laipsnis[v] = 0 then
+                 įdėk(eil, v);
+         nr := 0; { išrikiuotų viršūnių sekos indeksas }
+         while not tuščia(eil) do begin
+             v := išimk(eil);
+             nr := nr + 1;
+             seka[nr] := v; { v įrašoma į seką }
+             { „ištrinami“ iš v išeinantys lankai ir papildoma eilė }
+             for i := 1 to g.vir[v].k do begin
+                 u := g.vir[v].ksąrašas[i]; { kaimynė }
+                 g.laipsnis[u] := g.laipsnis[u] - 1;
+                 if g.laipsnis[u] = 0 then
+                     įdėk(eil, u);
+             end;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...;  // maksimalus viršūnių skaičius
+
+      int n;                 // viršūnių skaičius
+      vector<int> adj[MAXN]; // adj[i] yra i-tosios viršūnės kaimynų sąrašas
+      int laipsnis[MAXN];    // įėjimo laipsniai
+
+      vector<int> seka;
+
+      void toposort () {
+          // topologinis išrikiavimas bus įrašomas į vektorių "seka"
+
+          queue<int> q;
+          for (int i = 0; i < n; i++)
+              if (laipsnis[i] == 0)
+                  q.push(i);
+
+          while (!q.empty()) {
+              int v = q.front();
+              q.pop();
+              seka.push_back(v); // v įrašomas į seką
+
+              // "ištrinami" iš v išeinantys lankai ir papildoma eilė
+              for (int u : adj[v]) {
+                  // u - viršūnės v kaimynė
+                  laipsnis[u]--;
+                  if (laipsnis[u] == 0)
+                      q.push(u);
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -445,82 +484,164 @@ raides atitinkančios viršūnės yra grafe, nes ne visi simboliai
 įeina į abėcėlę. Procedūrai ``rask_abėcėlę`` perduodamas
 išrikiuotų pagal abėcėlę žodžių masyvas.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXŽODŽIŲ = ...;
-  type žodžiai = array [1..MAXŽODŽIŲ + 1] of string;
-       grafas = record
-           n : integer; { viršūnių skaičius }
-           viršūnė : array [char] of boolean;
-                     { ar grafe yra raidę atitinkanti viršūnė }
-           lankas : array [char, char] of boolean;
-           įein_lankų : array [char] of integer;
-       end;
-  procedure rask_abėcėlę(sk : integer; { žodžių skaičius }
-                         var ž : žodžiai;
-                         var abėcėlė : string);
-                       { atsakymas įrašomas į eilutę abėcėlė }
-      procedure sudaryk_grafą(var g : grafas);
-      var i, j, m : integer;
-          c, d : char;
-      begin
-          { išvalomi masyvai }
-          g.n := 0;
-          for c := low(char) to high(char) do begin
-              g.viršūnė[c] := false;
-              g.įein_lankų[c] := 0;
-              for d := low(char) to high(char) do
-                  g.lankas[c, d] := false;
-          end;
+  .. tab:: Paskalis
 
-          { sudaromas grafas }
-          ž[sk + 1] := ''; { pridedame tuščią žodį }
-          for i := 1 to sk do begin
-              { jei randama naujų raidžių – jos įtraukiamos į grafą }
-              for j := 1 to length(ž[i]) do
-                  if not g.viršūnė[ž[i][j]] then begin
-                      g.viršūnė[ž[i][j]] := true;
-                      inc(g.n);
-                  end;
-              m := min (length(ž[i]), length(ž[i + 1]));
-              { Funkcijos min teksto nepateikiame – ji
-                paprasčiausiai grąžina mažesnįjį iš dviejų
-                parametrų. }
-              j := 1;
-              while (j <= m) and (ž[i][j] = ž[i+1][j])
-                  do inc(j); { ieškoma nesutampanti raidė }
-              if (j <= m) and
-                 not g.lankas[ž[i][j], ž[i+1][j]]
-              then begin
-              { rasta nesutampanti raidė – grafas papildomas lanku }
-                  g.lankas[ž[i][j], ž[i+1][j]] := true;
-                  inc(g.įein_lankų[ž[i + 1][j]]);
-              end;
-          end;
-      end;
-  var g : grafas;
-      c, d : char;
-  begin
-      sudaryk_grafą(g);
-      { topologiškai išrikiuojamas grafas (randama abėcėlė) }
-      abėcėlė := '';
-      while g.n > 0 do begin
-          c := low(char);
-          { randama viršūnė be įeinančių lankų }
-          while (not g.viršūnė[c]) or
-              (g.įein_lankų[c] > 0) do inc(c);
-          { raidė pridedama prie abėcėlės }
-          abėcėlė := abėcėlė + c;
+    .. code-block:: unicode_pascal
 
-          { atnaujinami kaimynių laipsniai }
-          for d := low(char) to high(char) do
-              if g.lankas[c, d] then
-                  dec(g.įein_lankų[d]);
-          { viršūnė ištrinama iš grafo }
-          g.viršūnė[c] := false;
-          dec(g.n);
-      end;
-  end;
+      const MAXŽODŽIŲ = ...;
+      type žodžiai = array [1..MAXŽODŽIŲ + 1] of string;
+          grafas = record
+              n : integer; { viršūnių skaičius }
+              viršūnė : array [char] of boolean;
+                        { ar grafe yra raidę atitinkanti viršūnė }
+              lankas : array [char, char] of boolean;
+              įein_lankų : array [char] of integer;
+          end;
+      procedure rask_abėcėlę(sk : integer; { žodžių skaičius }
+                            var ž : žodžiai;
+                            var abėcėlė : string);
+                          { atsakymas įrašomas į eilutę abėcėlė }
+         procedure sudaryk_grafą(var g : grafas);
+         var i, j, m : integer;
+             c, d : char;
+         begin
+             { išvalomi masyvai }
+             g.n := 0;
+             for c := low(char) to high(char) do begin
+                 g.viršūnė[c] := false;
+                 g.įein_lankų[c] := 0;
+                 for d := low(char) to high(char) do
+                     g.lankas[c, d] := false;
+             end;
+
+              { sudaromas grafas }
+             ž[sk + 1] := ''; { pridedame tuščią žodį }
+             for i := 1 to sk do begin
+                 { jei randama naujų raidžių – jos įtraukiamos į grafą }
+                 for j := 1 to length(ž[i]) do
+                     if not g.viršūnė[ž[i][j]] then begin
+                         g.viršūnė[ž[i][j]] := true;
+                         inc(g.n);
+                     end;
+                 m := min (length(ž[i]), length(ž[i + 1]));
+                  { Funkcijos min teksto nepateikiame – ji
+                    paprasčiausiai grąžina mažesnįjį iš dviejų
+                    parametrų. }
+                 j := 1;
+                 while (j <= m) and (ž[i][j] = ž[i+1][j])
+                     do inc(j); { ieškoma nesutampanti raidė }
+                 if (j <= m) and
+                    not g.lankas[ž[i][j], ž[i+1][j]]
+                 then begin
+                 { rasta nesutampanti raidė – grafas papildomas lanku }
+                     g.lankas[ž[i][j], ž[i+1][j]] := true;
+                     inc(g.įein_lankų[ž[i + 1][j]]);
+                 end;
+             end;
+         end;
+      var g : grafas;
+         c, d : char;
+      begin
+         sudaryk_grafą(g);
+         { topologiškai išrikiuojamas grafas (randama abėcėlė) }
+         abėcėlė := '';
+         while g.n > 0 do begin
+             c := low(char);
+             { randama viršūnė be įeinančių lankų }
+             while (not g.viršūnė[c]) or
+                 (g.įein_lankų[c] > 0) do inc(c);
+             { raidė pridedama prie abėcėlės }
+             abėcėlė := abėcėlė + c;
+
+              { atnaujinami kaimynių laipsniai }
+             for d := low(char) to high(char) do
+                 if g.lankas[c, d] then
+                     dec(g.įein_lankų[d]);
+             { viršūnė ištrinama iš grafo }
+             g.viršūnė[c] := false;
+             dec(g.n);
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      #include <limits.h>
+      /*
+          šios bibliotekos prireiks, kadangi naudosime konstantas
+          CHAR_MIN (mažiausia char tipo kintamojo pasiekiama reikšmė) ir
+          CHAR_MAX (didŽiausia char tipo kintamojo pasiekiama reikšmė)
+      */
+
+      const int MAXZODZIU = ...;
+
+      int sk;                             // žodžių skaičius
+      string z[MAXZODZIU + 1];            // žodžių masyvas
+      int n;                              // viršūnių skaičius
+      map<char, bool> virsune;            // ar grafe yra raidę atitinkanti viršūnė
+      map<pair<char, char>, bool> lankas;
+      map<char, int> ieinLanku;
+
+      void sudarykGrafa () {
+          // išvalomos duomenų struktūros
+          n = 0;
+          virsune.clear();
+          lankas.clear();
+          ieinLanku.clear();
+
+          // sudaromas grafas
+          zodziai[sk] = ""; // pridedame tuščią žodį
+          for (int i = 0; i < sk; i++) {
+              for (int j = 0; j < (int)z[i].size(); j++) {
+                  // jei randama naujų raidžių - jos įtraukiamos į grafą
+                  if (!virsune[z[i][j]]) {
+                      n++;
+                      virsune[z[i][j]] = true;
+                  }
+              }
+
+              int m = min((int)z[i].size(), (int)z[i+1].size());
+              int j = 0;
+              while (j < m && z[i][j] == z[i+1][j]) {
+                  j++;
+                  // ieškoma nesutampanti raidė
+              }
+
+              if (j < m && !(lankas[{z[i][j], z[i+1][j]}])) {
+                  // rasta nesutampanti raidė - grafas papildomas lanku
+                  lankas[{z[i][j], z[i+1][j]}] = true;
+                  ieinLanku[z[i+1][j]]++;
+              }
+          }
+      }
+
+      string raskAbecele () {
+          string abecele = ""; // atsakymas bus įrašomas į eilutę "abėcėlė"
+          sudarykGrafa ();     // topologiškai išrikiuojamas grafas (randama abėcėlė)
+
+          while (n > 0) {
+              char c = CHAR_MIN;
+              // randama viršūnė be įeinančių lankų
+              while (!virsune[c] || ieinLanku[c] > 0) {
+                  c++;
+              }
+              abecele += c; // raidė pridedama prie abėcėlės
+
+              // atnaujinami kaimynų laipsniai
+              for (char d = CHAR_MIN; d <= CHAR_MAX; d++) {
+                  if (lankas[{c,d}])
+                      ieinLanku[d]--;
+
+              // viršūnė ištrinama iš grafo
+              virsune[c] = false;
+              n--;
+          }
+
+          return abecele;
+      }
 
 .. code-block:: unicode_cpp
 

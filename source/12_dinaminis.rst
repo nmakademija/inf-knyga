@@ -162,17 +162,33 @@ rekursyviai, tereikia ją suskaičiuoti.
 :ref:`skyrelis-rekursyvios-funkcijos` skyrelyje buvo pateikta rekursinė
 funkcija, skaičiuojanti Fibonačio skaičius:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function F(n : longint) : longint;
-  begin
-      if n = 0 then
-          F := 0
-      else if n <= 2 then
-          F := 1
-      else
-          F(n - 1) + F(n - 2);
-  end;       
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function F(n : longint) : longint;
+      begin
+         if n = 0 then
+             F := 0
+         else if n <= 2 then
+             F := 1
+         else
+             F(n - 1) + F(n - 2);
+      end;       
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      long long F (long long n) {
+          if (n == 0)
+              return 0;
+          if (n <= 2)
+              return 1;
+          return F(n-1) + F(n-2);
+      }
 
 .. code-block:: unicode_cpp
 
@@ -206,24 +222,47 @@ atlikti beveik dvigubai daugiau darbo.
 Taigi, būtų natūralu kartą suskaičiuotą reikšmę įsiminti
 masyve, ir jos daugiau neperskaičiuoti:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAX = ...;
-  var Fmas : array [0..MAX] of longint;
-  function F(n : longint) : longint;
-  begin
-      { dar neapskaičiuotos reikšmės žymimos -1 }
-      if Fmas[n] <> -1 then
-          F := Fmas[n]
-      else if n = 0 then
-          F := 0
-      else if n = 1 then
-          F := 1
-      else begin
-          Fmas[n] := F(n - 1) + F(n - 2);
-          F := Fmas[n];
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAX = ...;
+      var Fmas : array [0..MAX] of longint;
+      function F(n : longint) : longint;
+      begin
+         { dar neapskaičiuotos reikšmės žymimos -1 }
+         if Fmas[n] <> -1 then
+             F := Fmas[n]
+         else if n = 0 then
+             F := 0
+         else if n = 1 then
+             F := 1
+         else begin
+             Fmas[n] := F(n - 1) + F(n - 2);
+             F := Fmas[n];
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAX = ...;
+      long long Fmas[MAX+1];
+
+      long long F (long long n) {
+          // dar neapsaičiuotos reikšmės žymimos -1
+          if (Fmas[n] != -1)
+              return Fmas[n];
+          if (n == 0)
+              return 0;
+          if (n <= 2)
+              return 1;
+          Fmas[n] = F(n-1) + F(n-2);
+          return Fmas[n];
+      }
 
 .. code-block:: unicode_cpp
 
@@ -260,18 +299,37 @@ paprasčiau yra apsieiti be rekursijos ir suskaičiuoti :math:`F_n`
 generuojant Fibonačio skaičių seką iš eilės, kiekvieną narį
 gaunant iš dviejų paskutinių:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  var Fmas : array [0..MAX] of longint;
-  function F(n : longint) : longint;
-  var k : integer;
-  begin
-      Fmas[0] := 0;
-      Fmas[1] := 1;
-      for k := 2 to n do
-          Fmas[k] := Fmas[k - 1] + Fmas[k - 2];
-      F := Fmas[n];
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      var Fmas : array [0..MAX] of longint;
+      function F(n : longint) : longint;
+      var k : integer;
+      begin
+         Fmas[0] := 0;
+         Fmas[1] := 1;
+         for k := 2 to n do
+             Fmas[k] := Fmas[k - 1] + Fmas[k - 2];
+         F := Fmas[n];
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAX = ...;
+      long long Fmas[MAX+1];
+
+      long long F (long long n) {
+          Fmas[0] = 0;
+          Fmas[1] = 1;
+          for (int k = 2; k <= n; k++)
+              Fmas[k] = Fmas[k-1] + Fmas[k-2];
+          return Fmas[n];
+      }
 
 .. code-block:: unicode_cpp
 
@@ -427,37 +485,76 @@ rinkinį įtraukti negalime. Priešingu atveju, ``D[k, r]`` priskiriame
 didesnę iš reikšmių ``D[k - 1, r]`` ir
 ``(vertė[k] + D[k – 1, r – svoris[k]])``.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = ...; { maksimalus eksponatų skaičius }
-        MAXS = ...; { maksimalus panešamas svoris }
-  type lentelė = array [0..MAXN, 0..MAXS] of integer;
-       masyvas = array [1..MAXN] of integer;
-  procedure skaičiuok(n, S : integer;
-                      var svoris, vertė : masyvas;
-                      var D : lentelė);
-  var k, r : integer;
-  begin
-      { užpildomos kraštinės lentelės reikšmės }
-      for r := 0 to S do
-          D[0, r] := 0;
-      for k := 0 to n do
-          D[k, 0] := 0;
-      { užpildoma visa likusi lentelės dalis }
-      for r := 1 to S do
-          for k := 1 to n do
-              if svoris[k] <= r then
-                  { jei k-asis eksponatas tilptų }
-                  D[k, r] := max (
-                      D[k - 1, r],
-                      vertė[k] + D[k - 1, r - svoris[k]])
-                  { Funkcija max randa didesnįjį iš dviejų
-                    skaičių, jos teksto nepateikiame. }
-              else
-                  { jei k-asis eksponatas netilptų,
-                    jo įtraukti negalima }
-                  D[k, r] := D[k - 1, r];
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = ...; { maksimalus eksponatų skaičius }
+           MAXS = ...; { maksimalus panešamas svoris }
+      type lentelė = array [0..MAXN, 0..MAXS] of integer;
+          masyvas = array [1..MAXN] of integer;
+      procedure skaičiuok(n, S : integer;
+                         var svoris, vertė : masyvas;
+                         var D : lentelė);
+      var k, r : integer;
+      begin
+         { užpildomos kraštinės lentelės reikšmės }
+         for r := 0 to S do
+             D[0, r] := 0;
+         for k := 0 to n do
+             D[k, 0] := 0;
+         { užpildoma visa likusi lentelės dalis }
+         for r := 1 to S do
+             for k := 1 to n do
+                 if svoris[k] <= r then
+                     { jei k-asis eksponatas tilptų }
+                     D[k, r] := max (
+                         D[k - 1, r],
+                         vertė[k] + D[k - 1, r - svoris[k]])
+                      { Funkcija max randa didesnįjį iš dviejų
+                        skaičių, jos teksto nepateikiame. }
+                 else
+                     { jei k-asis eksponatas netilptų,
+                       jo įtraukti negalima }
+                     D[k, r] := D[k - 1, r];
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...; // maksimalus eksponatų skaičius
+                MAXS = ...; // maksimalus panešamas svoris
+
+      int n;
+      int S;
+      int svoris[MAXN+1];
+      int verte[MAXN+1];
+      int dp[MAXN+1][MAXS+1]; // knygoje šis masyvas žymimas "D", tačiau žymėti "dp" yra labiau įprasta
+
+      void skaiciuok () {
+          // užpildomos kraštinės lentelės  reikšmės
+          for (int r = 0; r <= S; r++)
+              dp[0][r] = 0;
+          for (int k = 0; k <= n; k++)
+              dp[k][0] = 0;
+          // užpildoma visa likusi lentelės dalis
+          for (int r = 1; r <= S; r++) {
+              for (int k = 1; k <= n; k++) {
+                  if (svoris[k] <= r)
+                      // jei k-asis eksponatas tilptų
+                      dp[k][r] = max(
+                          dp[k-1][r],                         // k-ojo daikto neimame - svorį r turime gauti iš pirmų k-1 daiktų
+                          verte[k-1] + dp[k-1][r-svoris[k]]   // k-ąjį daiktą imame - tuomet pridedama jo vertė ir iš pirmų k-1 daiktų reikia surinkti svorį r-svoris[k]
+                      );
+                  else
+                      // jei k-asis eksponatas netilptų, jo įtraukti negalima
+                      dp[k][r] = dp[k-1][r];
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -517,30 +614,60 @@ nagrinėjame langelius ``[n - 1, S]`` arba
 ``[n - 1, S - svoris[n]]``, ir taip toliau, kol pasiekiame lentelės
 kraštą.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  type logmas = array [1..MAXN] of boolean;
-  procedure sudaryk_rinkinį(n, S : integer;
-                            var svoris : masyvas;
-                            var D : lentelė;
-                            var imti : logmas);
-  { pagal masyvų „D“ ir „svoris“ reikšmes nustatoma,
-    kuriuos eksponatus verta imti }
-  var k, r : integer;
-  begin
-      for k := 1 to n do
-          imti[k] := false;
-      k := n;
-      r := S;
-      while (k > 0) and (r > 0) do begin
-          if D[k, r] > D[k - 1, r] then begin
-              { vadinasi, vertė D[k, r] gauta įtraukus k-ąjį eksponatą }
-              imti[k] := true;
-              r := r - svoris[k];
-          end;
-          k := k - 1;
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      type logmas = array [1..MAXN] of boolean;
+      procedure sudaryk_rinkinį(n, S : integer;
+                               var svoris : masyvas;
+                               var D : lentelė;
+                               var imti : logmas);
+      { pagal masyvų „D“ ir „svoris“ reikšmes nustatoma,
+       kuriuos eksponatus verta imti }
+      var k, r : integer;
+      begin
+         for k := 1 to n do
+             imti[k] := false;
+          k := n;
+         r := S;
+         while (k > 0) and (r > 0) do begin
+             if D[k, r] > D[k - 1, r] then begin
+                 { vadinasi, vertė D[k, r] gauta įtraukus k-ąjį eksponatą }
+                 imti[k] := true;
+                 r := r - svoris[k];
+             end;
+             k := k - 1;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int n;
+      int S;
+      int svoris[MAXN+1];
+      int D[MAXN+1][MAXS+1];
+      bool imti[MAXN+1];
+
+      void sudarykRinkini () {
+          // pagal masyvų "D" ir "svoris" reikšmes nustatoma, kuriuos eksponatus verta imti
+          for (int k = 1; k <= n; k++)
+              imti[k] = false;
+
+          int k = n, r = S;
+          while (k > 0 && r > 0) {
+              if (D[k][r] > D[k-1][r]) {
+                  // vadinasi, vertė D[k][r] gauta įtraukus k-ąjį eksponatą
+                  imti[k] = true;
+                  r -= svoris[k];
+              }
+              k--;
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -637,40 +764,85 @@ sukonstruoti optimalų sprendinį: ``p[k]`` rodo ilgiausio sekos
 :math:`a_1, a_2, \dots, a_k` posekio, užsibaigiančio nariu
 :math:`a_k`, priešpaskutinio nario numerį.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAX = ...; { maksimalus sekos ilgis }
-  type masyvas = array [1..MAX] of integer;
-  procedure ilg_posekis(a : masyvas; n : integer;
-                        var posekis : masyvas;
-                        var ilgis : integer);
-  var L, p : masyvas;
-      k, kmax, m, nr : integer;
-  begin
-      { optimalaus sprendinio vertė skaičiuojama iš apačios į viršų }
-      kmax := 1; { ilgiausio posekio paskutiniojo elemento indeksas }
-      for m := 1 to n do begin
-          L[m] := 0;
-          for k := 1 to m - 1 do
-              if (a[k] < a[m]) and (L[k] > L[m])
-              then begin
-                  L[m] := L[k];
-                  {pažymimas priešpaskutinis šio posekio elementas}
-                  p[m] := k;
-              end;
-          { priskaičiuojamas ir m-asis elementas }
-          L[m] := L[m] + 1;
-          if L[kmax] < L[m] then
-              { tai ilgiausias kol kas rastas posekis }
-              kmax := m;
-      end;
-      { sukonstruojamas optimalus sprendinys }
-      ilgis := L[kmax];
-      for k := ilgis downto 1 do begin
-          posekis[k] := a[kmax];
-          kmax := p[kmax];
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAX = ...; { maksimalus sekos ilgis }
+      type masyvas = array [1..MAX] of integer;
+      procedure ilg_posekis(a : masyvas; n : integer;
+                           var posekis : masyvas;
+                           var ilgis : integer);
+      var L, p : masyvas;
+         k, kmax, m, nr : integer;
+      begin
+         { optimalaus sprendinio vertė skaičiuojama iš apačios į viršų }
+         kmax := 1; { ilgiausio posekio paskutiniojo elemento indeksas }
+         for m := 1 to n do begin
+             L[m] := 0;
+             for k := 1 to m - 1 do
+                 if (a[k] < a[m]) and (L[k] > L[m])
+                 then begin
+                     L[m] := L[k];
+                     {pažymimas priešpaskutinis šio posekio elementas}
+                     p[m] := k;
+                 end;
+             { priskaičiuojamas ir m-asis elementas }
+             L[m] := L[m] + 1;
+             if L[kmax] < L[m] then
+                 { tai ilgiausias kol kas rastas posekis }
+                 kmax := m;
+         end;
+         { sukonstruojamas optimalus sprendinys }
+         ilgis := L[kmax];
+         for k := ilgis downto 1 do begin
+             posekis[k] := a[kmax];
+             kmax := p[kmax];
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAX = ...; // maksimalus sekos ilgis
+
+      int n;
+      int a[MAX+1];
+      int posekis[MAX+1];
+      int ilgis;
+
+      void ilgPosekis () {
+          int L[MAX+1];
+          int p[MAX+1];
+
+          // optimalaus sprendinio vertė skaičiuojama iš apačios į viršų
+          int kmax = 1;
+          for (int m = 1; m <= n; m++) {
+              for (int k = 1; k < m; k++) {
+                  if (a[k] < a[m] && L[k] > L[m]) {
+                      L[m] = L[k];
+                      // pažymimas priešpaskutinis šio posekio elementas
+                      p[m] = k;
+                  }
+              }
+
+              // priskaičiuojamas ir m-asis elementas
+              L[m]++;
+              if (L[kmax] < L[m])
+                  // tai ilgiausias kol kas rastas posekis
+                  kmax = m;
+          }
+
+          // sukonstruojamas optimalus sprendinys
+          ilgis = L[kmax];
+          for (int k = ilgis; k > 0; k--) {
+              posekis[k] = a[kmax];
+              kmax = p[kmax];
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -836,31 +1008,67 @@ Pildant lentelės langelį :math:`[k, S]`, peržiūrimi langeliai
 iš jų įrašyta reikšmė :math:`true`, tai į :math:`[k,  S]` taip
 pat įrašoma :math:`true`:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = ...; { maksimalus dėmenų skaičius }
-        MAXM = ...; { maksimali dėmens vertė }
-  type masyvas = array [1..MAXN] of integer;
-       logmas2 = array [0..MAXN * MAXM,
-                        0..MAXN] of boolean;
-  procedure dėstyk(var v : masyvas; n, A : integer;
-                   var G : logmas2);
-  var k, S : integer;
-  begin
-      { išvalomos masyvo reikšmės }
-      for k := 0 to n do
-          for S := 0 to A do
-              G[k, S] := false;
-      { išdėstomos sumos }
-      G[0, 0] := true; { inicializuojama kraštiė reikšmė }
-      for k := 1 to n do
-          for S := 0 to A do
-              if G[k - 1, S] then
-                  G[k, S] := true
-              else if (v[k] <= S) then
-                  if (G[k - 1, S - v[k]]) then
-                      G[k, S] := true;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = ...; { maksimalus dėmenų skaičius }
+           MAXM = ...; { maksimali dėmens vertė }
+      type masyvas = array [1..MAXN] of integer;
+          logmas2 = array [0..MAXN * MAXM,
+                           0..MAXN] of boolean;
+      procedure dėstyk(var v : masyvas; n, A : integer;
+                      var G : logmas2);
+      var k, S : integer;
+      begin
+         { išvalomos masyvo reikšmės }
+         for k := 0 to n do
+             for S := 0 to A do
+                 G[k, S] := false;
+         { išdėstomos sumos }
+         G[0, 0] := true; { inicializuojama kraštiė reikšmė }
+         for k := 1 to n do
+             for S := 0 to A do
+                 if G[k - 1, S] then
+                     G[k, S] := true
+                 else if (v[k] <= S) then
+                     if (G[k - 1, S - v[k]]) then
+                         G[k, S] := true;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...; // maksimalus dėmenų skaičius
+      const int MAXM = ...; // maksimali dėmens vertė
+
+      int n;
+      int A;
+      int v[MAXN+1];
+      bool G[MAXN*MAXM+1][MAXN+1];
+
+      void destyk () {
+          // išvalomos masyvo reikšmės
+          for (int k = 0; k <= n; k++)
+              for (int S = 0; S <= A; S++)
+                  g[k][s] = false;
+
+          // išdėstomos sumos
+          G[0][0] = true; // inicializuojama kraštinė reikšmė
+          for (int k = 1; k <= n; k++) {
+              for (int S = 0; S <= A; S++) {
+                  if (G[k-1][S])
+                      G[k][S] = true;
+                  else if (v[k] <= S) {
+                      if (G[k-1][S-v[k]])
+                          G[k][S] = true;
+                  }
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -911,38 +1119,84 @@ dėmenų, t. y. :math:`G[n - 1, A] = true`. Priešingu atveju,
 :math:`n - 1` dėmens reikalingumą, nagrinėdami langelius
 :math:`G[n - 1, A]` arba :math:`G[n - 1, A - v_n]`.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  type logmas = array [1..MAXN] of boolean;
-  procedure dalybos(var Rusnei : logmas;
-                    var v : masyvas; n : integer);
-  { rezultatas įrašomas į masyvą „Rusnei“: Rusnei[k] = true,
-     jei k-ąją dovaną reikia skirti jai }
-  var G : logmas2;
-      Vsum : longint;
-      i, S : integer;
-  begin
-      { suskaičiuojama visų verčių suma }
-      Vsum := 0;
-      for i := 1 to n do
-          Vsum := Vsum + v[i];
-      dėstyk(v, n, Vsum div 2, G);
-      { randama artimiausia V/2 reikšmė, kurią galima išdėstyti }
-      S := Vsum div 2;
-      while not G[n, S] do
-          S := S - 1;
-      { nustatoma, kurias iš dovanų skirti Rusnei,
-       kad jų bendra vertė būtų lygi S }
-      for i := 1 to n do
-          Rusnei[i] := false;
-      i := n;
-      for i := n downto 1 do
-         { tikrinama, ar S vertės rinkiniui priklauso i-oji dovana }
-         if not G[i - 1, S] then begin
-             Rusnei[i] := true;
-             S := S - v[i];
-         end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      type logmas = array [1..MAXN] of boolean;
+      procedure dalybos(var Rusnei : logmas;
+                       var v : masyvas; n : integer);
+      { rezultatas įrašomas į masyvą „Rusnei“: Rusnei[k] = true,
+        jei k-ąją dovaną reikia skirti jai }
+      var G : logmas2;
+         Vsum : longint;
+         i, S : integer;
+      begin
+         { suskaičiuojama visų verčių suma }
+         Vsum := 0;
+         for i := 1 to n do
+             Vsum := Vsum + v[i];
+         dėstyk(v, n, Vsum div 2, G);
+         { randama artimiausia V/2 reikšmė, kurią galima išdėstyti }
+         S := Vsum div 2;
+         while not G[n, S] do
+             S := S - 1;
+         { nustatoma, kurias iš dovanų skirti Rusnei,
+          kad jų bendra vertė būtų lygi S }
+         for i := 1 to n do
+             Rusnei[i] := false;
+         i := n;
+         for i := n downto 1 do
+            { tikrinama, ar S vertės rinkiniui priklauso i-oji dovana }
+            if not G[i - 1, S] then begin
+                Rusnei[i] := true;
+                S := S - v[i];
+            end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int n;
+      int A;
+      int v[MAXN+1];
+      int G[MAXN*MAXM+1][MAXN+1];
+      bool Rusnei[MAXN+1];
+
+      void dalybos () {
+          /*
+              rezultatas įrašomas į masyvą "Rusnei":
+              Rusnei[k] = true, jei k-ąją dovaną reikia skirti jai
+          */
+
+          // suskaičiuojama visų verčių suma
+          long long Vsum = 0;
+          for (int i = 1; i <= n; i++)
+              Vsum += v[i];
+
+          A = Vsum/2;
+          destyk();
+
+          // randama artimiausia Vsum/2 reikšmė, kurią galima išdėstyti
+          int S = Vsum/2;
+          while (!G[n][S]) {
+              S--;
+          }
+
+          // nustatoma, kurias iš dovanų skirti Rusnei, kad jų bendra vertė būtų lygi S
+          for (int i = 1; i <= n; i++)
+              Rusnei[i] = false;
+          for (int i = n; i > 0; i--) {
+              // tikrinama, ar S vertės rinkiniui priklauso i-toji dovana
+              if (!G[i-1][S]) {
+                  Rusnei[i] = true;
+                  S -= v[i];
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -1139,62 +1393,131 @@ dydį :math:`l` pasižymėsime atskirame masyve (``D[k, n] := l``).
 Toliau pateikiamas procedūros, apskaičiuojančios, kaip optimaliai
 paskirstyti knygų peržiūrėjimo darbą darbuotojams, tekstas.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = ...; { maksimalus knygų skaičius }
-        MAXK = ...; { maksimalus darbuotojų skaičius }
-        BEGALINIS = MAXINT;
-  type masyvas = array [0..MAXN + MAXK] of integer;
-       masyvas2 = array [1..MAXK, 0..MAXN] of integer;
-  procedure paskirstyk(k, n : integer;
-                       p : masyvas; { psl. skaičius }
-                       var įvertis : integer;
-                       var nuo : masyvas);
-      { apskaičiuoja knygų nuo i-osios iki j-osios puslapių skaičių sumą }
-      function S(i, j : integer) : integer;
-      var h : integer;
-      begin
-          S := 0;
-          for h := i to j do
-              S := S + p[h];
-      end;
-  var i, j, l, v : integer; { pagalbiniai kintamieji }
-      D, M : masyvas2;
-  begin
-      { užpildomos kraštinės reikšmės }
-      for i := 1 to k do
-          M[i, 0] := 0;
-      for j := 1 to n do begin
-          M[1, j] := S(1, j);
-          D[1, j] := 1;
-      end;
-      { apskaičiuojama likusi lentelės dalis }
-      for i := 2 to k do
-          for j := 1 to n do begin
-              M[i, j] := BEGALINIS;
-              { renkamasis minimumas... }
-              for l := 1 to j do begin
-                  { ...iš maksimumų }
-                  v := max(S(l, j), M[i - 1, l - 1]);
-                  { Funkcija max randa didesnįjį iš dviejų skaičių, jos
-                    nepateiksime. }
-                  if v < M[i, j] then begin
-                      M[i, j] := v;
-                      D[i, j] := l;
-                  end;
-              end;
-          end;
-      { sukonstruojamas optimalus sprendinys }
-      įvertis := M[k, n];
-      j := n;
-      for i := k downto 2 do begin
-          nuo[i] := D[i, j];
-          j := D[i, j] - 1;
-          { jei i-ajam darbuotojui skiriamos knygos nuo D[i, j], tai
-            likusiems i – 1 darbuotojų reikia paskirstyti D[i, j] – 1 knygų}
-      end;
-      nuo[1] := 1;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = ...; { maksimalus knygų skaičius }
+           MAXK = ...; { maksimalus darbuotojų skaičius }
+           BEGALINIS = MAXINT;
+      type masyvas = array [0..MAXN + MAXK] of integer;
+          masyvas2 = array [1..MAXK, 0..MAXN] of integer;
+      procedure paskirstyk(k, n : integer;
+                          p : masyvas; { psl. skaičius }
+                          var įvertis : integer;
+                          var nuo : masyvas);
+         { apskaičiuoja knygų nuo i-osios iki j-osios puslapių skaičių sumą }
+         function S(i, j : integer) : integer;
+         var h : integer;
+         begin
+             S := 0;
+             for h := i to j do
+                 S := S + p[h];
+         end;
+      var i, j, l, v : integer; { pagalbiniai kintamieji }
+         D, M : masyvas2;
+      begin
+         { užpildomos kraštinės reikšmės }
+         for i := 1 to k do
+             M[i, 0] := 0;
+         for j := 1 to n do begin
+             M[1, j] := S(1, j);
+             D[1, j] := 1;
+         end;
+         { apskaičiuojama likusi lentelės dalis }
+         for i := 2 to k do
+             for j := 1 to n do begin
+                 M[i, j] := BEGALINIS;
+                 { renkamasis minimumas... }
+                 for l := 1 to j do begin
+                     { ...iš maksimumų }
+                     v := max(S(l, j), M[i - 1, l - 1]);
+                      { Funkcija max randa didesnįjį iš dviejų skaičių, jos
+                        nepateiksime. }
+                     if v < M[i, j] then begin
+                         M[i, j] := v;
+                         D[i, j] := l;
+                     end;
+                 end;
+             end;
+         { sukonstruojamas optimalus sprendinys }
+         įvertis := M[k, n];
+         j := n;
+         for i := k downto 2 do begin
+             nuo[i] := D[i, j];
+             j := D[i, j] - 1;
+             { jei i-ajam darbuotojui skiriamos knygos nuo D[i, j], tai
+               likusiems i – 1 darbuotojų reikia paskirstyti D[i, j] – 1 knygų}
+         end;
+         nuo[1] := 1;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...;      // maksimalus knygų skaičius
+      const int MAXK = ...;      // maksimalus darbuotojų skaičius
+      const int BEGALINIS = ...; // kažkoks kuo didesnis skaičius, pavyzdžiui, 1e9
+
+      int k;
+      int n;
+      int p; // puslapių skaičius
+      int ivertis;
+      int nuo[MAXN+MAXK+1];
+
+      int S (int i, int j) {
+          // apskaičiuoja knygų nuo i-tosios iki j-tosios puslapių skaičių sumą
+          int suma = 0;
+          for (int h = i; h <= j; h++)
+              suma += p[h];
+          return suma;
+      }
+
+      void paskristyk () {
+          int D[MAXK+1][MAXN+1], M[MAXK+1][MAXN+1];
+
+          // užpildomos kraštinęs reikšmės
+          for (int i = 1; i <= k; i++)
+              M[i][0] = 0;
+          for (int j = 1; j <= n; j++) {
+              M[1][j] = S(1, j);
+              D[1][j] = 1;
+          }
+
+          // apskaičiuojama likusi lentelės dalis
+          for (int i = 2; i <= k; i++) {
+              for (int j = 1; j <= n; j++) {
+                  M[i][j] = BEGALINIS;
+
+                  // renkamas minimumas...
+                  for (int l = 1; l <= j; l++) {
+                      // ...iš maksimumų
+                      v = max(S(l, j), M[i-1][l-1]);
+                      if (v < M[i][j]) {
+                          M[i][j] = v;
+                          D[i][j] = l;
+                      }
+                  }
+              }
+          }
+
+          // sukonstruojamas optimalus sprendinys
+          ivertis = M[k][n];
+          int j = n;
+          for (int i = k; i > 1; i--) {
+              nuo[i] = D[i][j];
+              j = D[i][j]-1;
+              /*
+                  jei i-tajam darbuotojui skiriamos knygos nuo D[i][j],
+                  tai likusiems i-1 darbuotojų reikia paskirti
+                  D[i][j]-1 knygų
+              */
+          }
+          nuo[1] = 1;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -1333,46 +1656,113 @@ laiką), atliekant vieną aritmetinę operaciją:
 efektyviau realizuotą procedūrą ``paskirstyk``, kurios sudėtingumas
 yra :math:`O(n^2 \cdot k)` vietoje :math:`O(n^3 \cdot k)`.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  procedure paskirstyk(k, n : integer;
-                       p : masyvas; { psl. skaičius }
-                       var įvertis : integer;
-                       var nuo : masyvas);
-  var i, j, l, v : integer; { pagalbiniai kintamieji }
-      D, M : masyvas2;
-      r : masyvas;          { pagalbinis masyvas}
-  begin
-      { užpildomas masyvas r }                    // **
-      r[0] := 0;                                  // **
-      for j := 1 to n do                          // **
-          r[j] := r[j - 1] + p[j];                // **
-      { užpildomos kraštinės reikšmės }
-      for i := 1 to k do
-          M[i, 0] := 0;
-      for j := 1 to n do begin
-          M[1, j] := r[j];                        // **
-          D[1, j] := 1;
-      end;
-      { apskaičiuojama likusi lentelės dalis }
-      for i := 2 to k do
-          for j := 1 to n do begin
-              M[i, j] := BEGALINIS;
-              { renkamasis minimumas... }
-              for l := 1 to j do begin
-                  { ...iš maksimumų }
-                  v := max(r[j] - r[l - 1],       // **
-                           M[i - 1, l - 1]);      // **
-                  if v < M[i, j] then begin
-                      M[i, j] := v;
-                      D[i, j] := l;
-                  end;
-              end;
-          end;
-      { sukonstruojamas optimalus sprendinys }
-      {  }
-      ...
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      procedure paskirstyk(k, n : integer;
+                          p : masyvas; { psl. skaičius }
+                          var įvertis : integer;
+                          var nuo : masyvas);
+      var i, j, l, v : integer; { pagalbiniai kintamieji }
+         D, M : masyvas2;
+         r : masyvas;          { pagalbinis masyvas}
+      begin
+         { užpildomas masyvas r }                    // **
+         r[0] := 0;                                  // **
+         for j := 1 to n do                          // **
+             r[j] := r[j - 1] + p[j];                // **
+         { užpildomos kraštinės reikšmės }
+         for i := 1 to k do
+             M[i, 0] := 0;
+         for j := 1 to n do begin
+             M[1, j] := r[j];                        // **
+             D[1, j] := 1;
+         end;
+         { apskaičiuojama likusi lentelės dalis }
+         for i := 2 to k do
+             for j := 1 to n do begin
+                 M[i, j] := BEGALINIS;
+                 { renkamasis minimumas... }
+                 for l := 1 to j do begin
+                     { ...iš maksimumų }
+                     v := max(r[j] - r[l - 1],       // **
+                              M[i - 1, l - 1]);      // **
+                     if v < M[i, j] then begin
+                         M[i, j] := v;
+                         D[i, j] := l;
+                     end;
+                 end;
+             end;
+         { sukonstruojamas optimalus sprendinys }
+         {  }
+         ...
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...;      // maksimalus knygų skaičius
+      const int MAXK = ...;      // maksimalus darbuotojų skaičius
+      const int BEGALINIS = ...; // kažkoks kuo didesnis skaičius, pavyzdžiui, 1e9
+
+      int k;
+      int n;
+      int p; // puslapių skaičius
+      int ivertis;
+      int nuo[MAXN+MAXK+1];
+
+      void paskristyk () {
+          int D[MAXK+1][MAXN+1], M[MAXK+1][MAXN+1];
+          int r[MAXN+MAXK+1]; // pagalbinis masyvas
+
+          // užpildomas masyvas r                              //**
+          r[0] = 0;                                            //**
+          for (int j = 1; j <= n; j++)                         //**
+              r[j] = r[j-1] + p[j];                            //**
+
+          // užpildomos kraštinęs reikšmės
+          for (int i = 1; i <= k; i++)
+              M[i][0] = 0;
+          for (int j = 1; j <= n; j++) {
+              M[1][j] = r[j];                                  //**
+              D[1][j] = 1;
+          }
+
+          // apskaičiuojama likusi lentelės dalis
+          for (int i = 2; i <= k; i++) {
+              for (int j = 1; j <= n; j++) {
+                  M[i][j] = BEGALINIS;
+
+                  // renkamas minimumas...
+                  for (int l = 1; l <= j; l++) {
+                      // ...iš maksimumų
+                      v = max(r[j] - r[i-1], M[i-1][l-1]);     //**
+                      if (v < M[i][j]) {
+                          M[i][j] = v;
+                          D[i][j] = l;
+                      }
+                  }
+              }
+          }
+
+          // sukonstruojamas optimalus sprendinys
+          ivertis = M[k][n];
+          int j = n;
+          for (int i = k; i > 1; i--) {
+              nuo[i] = D[i][j];
+              j = D[i][j]-1;
+              /*
+                  jei i-tajam darbuotojui skiriamos knygos nuo D[i][j],
+                  tai likusiems i-1 darbuotojų reikia paskirti
+                  D[i][j]-1 knygų
+              */
+          }
+          nuo[1] = 1;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -1520,39 +1910,85 @@ Toliau pateikta procedūra naudoja dvimatį loginį masyvą ``medis``,
 kurio kiekvienas elementas ``medis[x, y]`` rodo, ar taške
 :math:`(x, y)` auga medis.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXM = ...; { maksimalus sodo dydis }
-  type lgmasyvas = array [0..MAXM, 0..MAXM] of boolean;
-       kvmasyvas = array [1..MAXM, 1..MAXM] of integer;
-  function max_sodas(m : integer; { sodo dydis }
-                     { medis[x, y] = true, jei (x, y) auga medis }
-                     var medis : lgmasyvas) : integer;
-  var x, y, plotas : integer;
-      Hp, K, D : kvmasyvas;
-  begin
-      { apskaičiuojame Hp reikšmes }
-      for y := 1 to m do
-          for x := 1 to m do
-              if y = 1 then
-                  Hp[x, y] := 1
-              else if medis[x - 1, y - 1] then
-                  Hp[x, y] := 1
-              else
-                  Hp[x, y] := Hp[x, y - 1] + 1;
-      { apskaičiuojame K ir D reikšmes kiekvienam stačiakampiui T
-        (šių procedūrų tekstas bus pateiktas vėliau) }
-      skaičiuok_K(m, Hp, K);
-      skaičiuok_D(m, Hp, D);
-      { belieka peržiūrėti visus stačiakampius ir išrinkti didžiausią }
-      max_sodas := 0;
-      for y := 1 to m do
-          for x := 1 to m do begin
-              plotas := Hp[x, y] * (D[x, y] - K[x, y]);
-              if plotas > max_sodas then
-                  max_sodas := plotas;
-          end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXM = ...; { maksimalus sodo dydis }
+      type lgmasyvas = array [0..MAXM, 0..MAXM] of boolean;
+          kvmasyvas = array [1..MAXM, 1..MAXM] of integer;
+      function max_sodas(m : integer; { sodo dydis }
+                        { medis[x, y] = true, jei (x, y) auga medis }
+                        var medis : lgmasyvas) : integer;
+      var x, y, plotas : integer;
+         Hp, K, D : kvmasyvas;
+      begin
+         { apskaičiuojame Hp reikšmes }
+         for y := 1 to m do
+             for x := 1 to m do
+                 if y = 1 then
+                     Hp[x, y] := 1
+                 else if medis[x - 1, y - 1] then
+                     Hp[x, y] := 1
+                 else
+                     Hp[x, y] := Hp[x, y - 1] + 1;
+         { apskaičiuojame K ir D reikšmes kiekvienam stačiakampiui T
+           (šių procedūrų tekstas bus pateiktas vėliau) }
+         skaičiuok_K(m, Hp, K);
+         skaičiuok_D(m, Hp, D);
+         { belieka peržiūrėti visus stačiakampius ir išrinkti didžiausią }
+         max_sodas := 0;
+         for y := 1 to m do
+             for x := 1 to m do begin
+                 plotas := Hp[x, y] * (D[x, y] - K[x, y]);
+                 if plotas > max_sodas then
+                     max_sodas := plotas;
+             end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXM = ...; // maksimalus sodo dydis
+
+      int m;                      // sodo dydis
+      bool medis[MAXM+1][MAXM+1]; // medis[x][y] = true, jei (x, y) auga medis
+      int Hp[MAXM+1][MAXM+1];
+      int K[MAXM+1][MAXM+1];
+      int D[MAXM+1][MAXM+1];
+
+      int maxSodas () {
+          // apskaičiuojame Hp reikšmes
+          for (int y = 1; y <= m; y++) {
+              for (int x = 1; x <= m; x++) {
+                  if (y == 1)
+                      Hp[x][y] = 1;
+                  else if (medis[x-1][y-1])
+                      Hp[x][y] = 1;
+                  else
+                      Hp[x][y] = Hp[x][y-1] + 1;
+              }
+          }
+
+          // apskaičiuojame K ir D reikšmes kiekvienam stačiakampiui T
+          // šių procedūrų tekstas bus pateiktas vėliau
+          skaiciuokK();
+          skaiciuokD();
+
+          // belieka peržiūrėti visus stačiakampius ir išrinkti didžiausią
+          int maxPlotas = 0;
+          for (int y = 1; y <= m; y++) {
+              for (int x = 1; x <= m; x++) {
+                  int plotas = Hp[x][y] * (D[x][y] - K[x][y]);
+                  if (plotas > maxPlotas)
+                      maxPlotas = plotas;
+              }
+          }
+          return maxPlotas;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -1710,75 +2146,142 @@ reikšmės, konkrečiu atveju – kai :math:`y = 5`.
 :math:`K` reikšmės skaičiuojamos analogiškai, tik koordinatės
 peržiūrimos iš dešinės į kairę.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  type masyvas = array [1..MAXM] of integer;
-  procedure skaičiuok_D(m : integer;
-                        var Hp : kvmasyvas;
-                        var D : kvmasyvas);
-  var dėklas : masyvas;
-      sk, x, y, s : integer;
-  begin
-      sk := 0; { Elementų skaičius dėkle }
-      for y := 1 to m do begin
-          for x := 1 to m do begin
-             if sk > 0 then begin
-                 s := dėklas[sk];
-                 while (sk > 0) and
-                       (Hp[x, y] < Hp[s, y]) do
-                 begin
-                     { rastas dešinysis T(s, y) kraštas (x - 1) }
-                     D[s, y] := x - 1;
-                     sk := sk - 1;
-                     if sk > 0 then s := dėklas[sk];
-                 end;
-             end;
-             { koordinatė x dedama į dėklą }
-             sk := sk + 1;
-             dėklas[sk] := x;
-          end;
-          { jei dėkle likus koordinatė x, tai T(x, y) tęsiasi
-            iki pat dešiniojo sodo krašto }
-          while sk > 0 do begin
-              s := dėklas[sk];
-              D[s, y] := m;
-              sk := sk - 1;
-          end;
-      end;
-  end;
-  procedure skaičiuok_K(m : integer;
-                        var Hp : kvmasyvas;
-                        var K : kvmasyvas);
-  var dėklas : masyvas;
-      sk, x, y, s : integer;
-  begin
-      sk := 0; { Elementų skaičius dėkle }
-      for y := 1 to m do begin
-          for x := m downto 1 do begin
-             if sk > 0 then begin
-                 s := dėklas[sk];
-                 while (sk > 0) and
-                       (Hp[x, y] < Hp[s, y]) do
-                 begin
-                     { rastas kairysis T(s, y) kraštas (x) }
-                     K[s, y] := x - 1;
-                     sk := sk - 1;
-                     if sk > 0 then s := dėklas[sk];
-                 end;
-             end;
-             { koordinatė x dedama į dėklą }
-             sk := sk + 1;
-             dėklas[sk] := x;
-          end;
-          { jei dėkle likus koordinatė x, tai T(x, y) tęsiasi
-            iki pat kairiojo sodo krašto }
-          while sk > 0 do begin
-              s := dėklas[sk];
-              K[s, y] := 0;
-              sk := sk - 1;
-          end;
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      type masyvas = array [1..MAXM] of integer;
+      procedure skaičiuok_D(m : integer;
+                           var Hp : kvmasyvas;
+                           var D : kvmasyvas);
+      var dėklas : masyvas;
+         sk, x, y, s : integer;
+      begin
+         sk := 0; { Elementų skaičius dėkle }
+         for y := 1 to m do begin
+             for x := 1 to m do begin
+                if sk > 0 then begin
+                    s := dėklas[sk];
+                    while (sk > 0) and
+                          (Hp[x, y] < Hp[s, y]) do
+                    begin
+                        { rastas dešinysis T(s, y) kraštas (x - 1) }
+                        D[s, y] := x - 1;
+                        sk := sk - 1;
+                        if sk > 0 then s := dėklas[sk];
+                    end;
+                end;
+                { koordinatė x dedama į dėklą }
+                sk := sk + 1;
+                dėklas[sk] := x;
+             end;
+             { jei dėkle likus koordinatė x, tai T(x, y) tęsiasi
+               iki pat dešiniojo sodo krašto }
+             while sk > 0 do begin
+                 s := dėklas[sk];
+                 D[s, y] := m;
+                 sk := sk - 1;
+             end;
+         end;
+      end;
+      procedure skaičiuok_K(m : integer;
+                           var Hp : kvmasyvas;
+                           var K : kvmasyvas);
+      var dėklas : masyvas;
+         sk, x, y, s : integer;
+      begin
+         sk := 0; { Elementų skaičius dėkle }
+         for y := 1 to m do begin
+             for x := m downto 1 do begin
+                if sk > 0 then begin
+                    s := dėklas[sk];
+                    while (sk > 0) and
+                          (Hp[x, y] < Hp[s, y]) do
+                    begin
+                        { rastas kairysis T(s, y) kraštas (x) }
+                        K[s, y] := x - 1;
+                        sk := sk - 1;
+                        if sk > 0 then s := dėklas[sk];
+                    end;
+                end;
+                { koordinatė x dedama į dėklą }
+                sk := sk + 1;
+                dėklas[sk] := x;
+             end;
+             { jei dėkle likus koordinatė x, tai T(x, y) tęsiasi
+               iki pat kairiojo sodo krašto }
+             while sk > 0 do begin
+                 s := dėklas[sk];
+                 K[s, y] := 0;
+                 sk := sk - 1;
+             end;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      void skaiciuokD () {
+          int deklas[MAXM+1];
+          int sk = 0; // elementų skaičius dėkle
+          for (int y = 1; y <= m; y++) {
+              for (int x = 1; x <= m; x++) {
+                  if (sk > 0) {
+                      int s = deklas[sk];
+                      while (sk > 0 && Hp[x][y] < Hp[s][y]) {
+                          // rastas dešinysis T(s, y) kraštas (x-1)
+                          D[s][y] = x-1;
+                          sk--;
+                          if (sk > 0) s = deklas[sk];
+                      }
+                  }
+
+                  // koordinatė x dedama į dėklą
+                  sk++;
+                  deklas[sk] = x;
+              }
+
+              // jei dėkle likus koordinatė x, tai T(x, y) tęsiasi iki pat dešiniojo sodo krašto
+              while (sk > 0) {
+                  s = deklas[sk];
+                  D[s][y] = m;
+                  sk--;
+              }
+          }
+      }
+
+      void skaiciuokK () {
+          int deklas[MAXM+1];
+          int sk = 0; // elementų skaičius dėkle
+          for (int y = 1; y <= m; y++) {
+              for (int x = m; x > 0; x--) {
+                  if (sk > 0) {
+                      int s = deklas[sk];
+                      while (sk > 0 && Hp[x][y] < Hp[s][y]) {
+                          // rastas kairysis T(s, y) kraštas (x-1)
+                          K[s][y] = x-1;
+                          sk--;
+                          if (sk > 0) s = deklas[sk];
+                      }
+                  }
+
+                  // koordinatė x dedama į dėklą
+                  sk++;
+                  deklas[sk] = x;
+              }
+
+              // jei dėkle likus koordinatė x, tai T(x, y) tęsiasi iki pat kairiojo sodo krašto
+              while (sk > 0) {
+                  s = deklas[sk];
+                  K[s][y] = 0;
+                  sk--;
+              }
+          }
+      }
+
 
 .. code-block:: unicode_cpp
 

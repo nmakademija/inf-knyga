@@ -106,34 +106,72 @@ numeris jau panaudotas (``panaudotas[i] := true``), o paėmus prekę
 nuo lentynos – atstatyti buvusią reikšmę
 (``panaudotas[i] := false``).
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = 20;        { didžiausia n reikšmė }
-  var p : array [1..MAXN] of integer;
-      panaudotas : array [1..MAXN] of boolean;
-  procedure spausdink(m: integer);
-  var i : integer;
-  begin
-      for i := 1 to m do
-          write(p[i], ' ');
-      writeln;
-  end;
-  procedure generuok(m, { parenkamas elementas m-ajai pozicijai }
-                     n : integer);
-  var i : integer;
-  begin
-      { jei m > n, tai ši procedūra iškviesta jau sugeneravus visą kėlinį }
-      if m > n then
-         spausdink(n)
-      else
-          for i := 1 to n do
-              if not panaudotas[i] then begin
-                  panaudotas[i] := true;
-                  p[m] := i;
-                  generuok(m + 1, n);
-                  panaudotas[i] := false;
-              end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = 20;        { didžiausia n reikšmė }
+      var p : array [1..MAXN] of integer;
+         panaudotas : array [1..MAXN] of boolean;
+      procedure spausdink(m: integer);
+      var i : integer;
+      begin
+         for i := 1 to m do
+             write(p[i], ' ');
+         writeln;
+      end;
+      procedure generuok(m, { parenkamas elementas m-ajai pozicijai }
+                        n : integer);
+      var i : integer;
+      begin
+         { jei m > n, tai ši procedūra iškviesta jau sugeneravus visą kėlinį }
+         if m > n then
+            spausdink(n)
+         else
+             for i := 1 to n do
+                 if not panaudotas[i] then begin
+                     panaudotas[i] := true;
+                     p[m] := i;
+                     generuok(m + 1, n);
+                     panaudotas[i] := false;
+                 end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = 20;
+      int p[MAXN];
+      bool panaudotas[MAXN+1];
+
+      // atspausdina sugeneruotą kėlinį
+      void spausdink(int n) {
+          for(int i = 0; i < n; i++) {
+              cout << p[i] << " ";
+          }
+          cout << endl;
+      }
+
+      // n – elementų kiekis
+      // k – dabar nagrinėjamo elemento indeksas
+      void gen(int n, int k) {
+          if(k >= n) {
+              spausdink(n);
+              return;
+          }
+          for(int i = 1; i <= n; i++) {
+              if(!panaudotas[i]) {
+                  panaudotas[i] = true;
+                  p[k] = i;
+                  gen(n, k+1);
+                  p[k] = 0;
+                  panaudotas[i] = false;
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -170,12 +208,25 @@ nuo lentynos – atstatyti buvusią reikšmę
 Kad galėtume išspausdinti visas trijų prekių išdėliojimo lentynoje
 tvarkas, įvykdome:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  n := 3;
-  for i := 1 to n do
-      panaudotas[i] := false;
-  generuok(1, n);
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      n := 3;
+      for i := 1 to n do
+         panaudotas[i] := false;
+      generuok(1, n);
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int n = 3;
+      for(int i = 1; i <= n; i++)
+        panaudotas[i] = false;
+      gen(n, 0);
 
 .. code-block:: unicode_cpp
 
@@ -314,8 +365,88 @@ išdėlioti valdoves lentoje. Tačiau nesunku modifikuoti procedūrą
 taip, kad ši rastus sprendinius išspausdintų – tuomet dar reikėtų
 saugoti, kur lentoje statomos valdovės.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = 12;
+      var eilutė : array [1..MAXN] of boolean;
+         įstr1 : array [2..2 * MAXN] of boolean;
+         įstr2 : array [-MAXN + 1..MAXN - 1] of boolean;
+         sprendinių_sk : longint;
+
+      procedure statyk(k, { valdovė statoma k-ajame stulpelyje }
+                      n : integer { reikia pastatyti n valdovių });
+      var i : integer;
+      begin
+         if k > n then { rastas sprendinys }
+             sprendinių_sk := sprendinių_sk + 1
+         else
+             for i := 1 to n do
+                 if not (eilutė[i] or
+                         įstr1[i + k] or
+                         įstr2[i - k])
+                 then begin
+                     eilutė[i] := true;
+                     įstr1[i + k] := true;
+                     įstr2[i - k] := true;
+                     { bandoma pastatyti likusias valdoves }
+                     statyk(k + 1, n);
+                     eilutė[i] := false;
+                     įstr1[i + k] := false;
+                     įstr2[i - k] := false;
+                 end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = 12;
+      bool eil[MAXN];
+      bool istr1[2*MAXN];
+      bool istr2[2*MAXN];
+      long long sprendiniųSk;
+
+      // padeda karalienę langelyje (r, c)
+      // r - eilutės numeris
+      // c - stulpelio numeris
+      // reikšmė – true, jei padedame karalienę; false, jei nuimame
+      void padėti(int n, int r, int c, bool reikšmė) {
+          eil[r] = reikšmė;
+          istr1[r+c] = reikšmė;
+          istr2[r-c+n-1] = reikšmė; // pridedam n-1, kad numeracija pasidarytu nuo 0, o ne nuo neigiamų skaičių
+      }
+
+      // ar langelis (r, c) nėra kertamas jokios karalienės?
+      // r - eilutės numeris
+      // c - stulpelio numeris
+      bool arLaisvas(int n, int r, int c) {
+          return !eil[r] && !istr1[r+c] && !istr2[r-c+n-1];
+      }
+
+      // n - kiek iš viso valdovių
+      // c - kuriame stulpelyje dabar statome valdovę
+      void statyk(int n, int c) {
+          if(c >= n) {
+              sprendiniųSk++;
+              return;
+          }
+          for(int r = 0; r < n; r++) {
+              if(arLaisvas(n, r, c)) {
+                  padėti(n, r, c, true);
+                  statyk(n, c+1);
+                  padėti(n, r, c, false);
+              }
+          }
+      }
+
+      // funkcijos kvietimas main funkcijoje:
+      statyk(n, 0);
+
+<<<<<<< HEAD
   const MAXN = 12;
   var eilutė : array [1..MAXN] of boolean;
       įstr1 : array [2..2 * MAXN] of boolean;
@@ -389,6 +520,8 @@ saugoti, kur lentoje statomos valdovės.
   // funkcijos kvietimas main'e:
   statyk(n, 0);
 
+=======
+>>>>>>> 41989fd90e84fe292816da12600504379fcd97db
 .. figure:: images/5_skyrius/16_lin_valdoves.png
   :align: center
   :width: 400px
@@ -438,29 +571,58 @@ Kitaip sakant, reikia rasti visus gretinius be pasikartojimų iš
 nagrinėtą kėlinių be pasikartojimų generavimo uždavinį, tiesiog
 iš :math:`n` elementų renkame tik :math:`k (k \leq n)`.
 
-.. code-block:: unicode_pascal
 
-  const MAX = 20;        { didžiausia n ir k reikšmė }
-  var p : array [1..MAX] of integer;
-      panaudotas : array [1..MAX] of boolean;
+.. tabs::
 
-  procedure generuok(m, { parenkamas elementas m-ajai pozicijai }
-                     n, k : integer);
-  var i : integer;
-  begin
-      { jei m > k,
-        tai ši procedūra iškviesta jau sugeneravus visą gretinį }
-      if m > k then
-         spausdink(k) { procedūros spausdink tekstą rasite 5.1 skyrelyje }
-      else
-          for i := 1 to n do
-              if not panaudotas[i] then begin
-                  panaudotas[i] := true;
-                  p[m] := i;
-                  generuok(m + 1, n, k);
-                  panaudotas[i] := false;
-              end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAX = 20;        { didžiausia n ir k reikšmė }
+      var p : array [1..MAX] of integer;
+         panaudotas : array [1..MAX] of boolean;
+
+      procedure generuok(m, { parenkamas elementas m-ajai pozicijai }
+                        n, k : integer);
+      var i : integer;
+      begin
+         { jei m > k,
+           tai ši procedūra iškviesta jau sugeneravus visą gretinį }
+         if m > k then
+            spausdink(k) { procedūros spausdink tekstą rasite 5.1 skyrelyje }
+         else
+             for i := 1 to n do
+                 if not panaudotas[i] then begin
+                     panaudotas[i] := true;
+                     p[m] := i;
+                     generuok(m + 1, n, k);
+                     panaudotas[i] := false;
+                 end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = 20;
+      int p[MAXN];
+      bool panaudotas[MAXN+1];
+
+      void gen(int m, int n, int k) {
+          if(m >= k) {
+              spausdink(k);
+              return;
+          }
+          for(int i = 1; i <= n; i++) {
+              if(!panaudotas[i]) {
+                  panaudotas[i] = true;
+                  p[m] = i;
+                  gen(m+1, n, k);
+                  p[m] = 0;
+                  panaudotas[i] = false;
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp 
 
@@ -486,13 +648,28 @@ iš :math:`n` elementų renkame tik :math:`k (k \leq n)`.
 
 Norėdami gauti visus gretinius iš 5 po 3, į procedūrą kreipiamės:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  n := 5;
-  k := 3;
-  for i := 1 to n do
-      panaudotas[i] := false;
-  generuok(1, n, k);
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      n := 5;
+      k := 3;
+      for i := 1 to n do
+         panaudotas[i] := false;
+      generuok(1, n, k);
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int n = 5;
+      int k = 3;
+      for(int i = 1; i <= n; i++)
+        panaudotas[i] = false;
+      gen(1, n, k);
+
 
 .. code-block:: unicode_cpp 
 
@@ -540,28 +717,56 @@ elementus.
   Keletas derinių iš penkių prekių po tris (tvarka
   deriniuose nesvarbi)
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAX = 20;        { didžiausia n ir k reikšmė }
-  var p : array [1..MAX] of integer;
-      panaudotas : array [1..MAX] of boolean;
-  procedure generuok(nuo, { bus renkamasi tik iš elementų,
-                           didesnių arba lygių „nuo“ }
-                     m, { parenkamas elementas m-ajai pozicijai }
-                     n, k: integer);
-  var i : integer;
-  begin
-      { jei m > k, tai ši procedūra iškviesta jau sugeneravus visą derinį }
-      if m > k then spausdink(k) { procedūros spausdink tekstą rasite 5.1 skyrelyje }
-      else
-          for i := nuo to n do
-              if not panaudotas[i] then begin
-                  panaudotas[i] := true;
-                  p[m] := i;
-                  generuok(i + 1, m + 1, n, k);
-                  panaudotas[i] := false;
-              end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAX = 20;        { didžiausia n ir k reikšmė }
+      var p : array [1..MAX] of integer;
+         panaudotas : array [1..MAX] of boolean;
+      procedure generuok(nuo, { bus renkamasi tik iš elementų,
+                              didesnių arba lygių „nuo“ }
+                        m, { parenkamas elementas m-ajai pozicijai }
+                        n, k: integer);
+      var i : integer;
+      begin
+         { jei m > k, tai ši procedūra iškviesta jau sugeneravus visą derinį }
+         if m > k then spausdink(k) { procedūros spausdink tekstą rasite 5.1 skyrelyje }
+         else
+             for i := nuo to n do
+                 if not panaudotas[i] then begin
+                     panaudotas[i] := true;
+                     p[m] := i;
+                     generuok(i + 1, m + 1, n, k);
+                     panaudotas[i] := false;
+                 end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = 20;
+      int p[MAXN];
+      int panaudotas[MAXN+1];
+
+      void gen(int nuo, int m, int n, int k) {
+          if(m >= k) {
+              spausdink(k);
+              return;
+          }
+          for(int i = nuo; i <= n; i++) {
+              if(!panaudotas[i]) {
+                  panaudotas[i] = true;
+                  p[m] = i;
+                  gen(i+1, m+1, n, k);
+                  p[m] = 0;
+                  panaudotas[i] = false;
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -588,13 +793,27 @@ elementus.
 Norėdami gauti visus skirtingus derinius iš 5 elementų po 3, į
 procedūrą kreipiamės:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  n := 5;
-  k := 3;
-  for i := 1 to n do
-      panaudotas[i] := false;
-  generuok(1, 1, n, k);
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      n := 5;
+      k := 3;
+      for i := 1 to n do
+         panaudotas[i] := false;
+      generuok(1, 1, n, k);
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int n = 5;
+      int k = 3;
+      for(int i = 1; i <= n; i++)
+        panaudotas[i] = false;
+      gen(1, n, k);
 
 .. code-block:: unicode_cpp
 
@@ -620,7 +839,7 @@ visus gretinius be pasikartojimų iš :math:`n` elementų po :math:`k`.
 .. math::
 
   k!C_n^k = A_n^k
-  
+
 arba:
 
 .. math::
@@ -650,34 +869,68 @@ visus įmanomus žodžius, kurių ilgis :math:`n` iš abėcėlės
 
   Abėcėlės {true, false} žodžių transformavimo į poaibius pavyzdys
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = 20;        { didžiausia n reikšmė }
-  var parinktas : array [1..MAXN] of boolean;
-      
-  procedure spausdink (m: integer);
-  var i : integer;
-  begin
-      write('{ ');
-      for i := 1 to m do
-          if parinktas[i] then
-              write(i, ' ');
-      writeln('}');
-  end;
+  .. tab:: Paskalis
 
-  procedure generuok(k, n : integer);
-  { nagrinėjamas k-asis n elementų aibės narys }
-  var log : boolean;
-  begin
-      { jei k > n, tai ši procedūra iškviesta jau sugeneravus visą poaibį }
-      if k > n then
-          spausdink (k)
-      else
-          for log := false to true do begin
-              parinktas[k] := log;
-              generuok(k + 1, n);
-          end;
-  end;
+    .. code-block:: unicode_pascal
+
+      const MAXN = 20;        { didžiausia n reikšmė }
+      var parinktas : array [1..MAXN] of boolean;
+         
+      procedure spausdink (m: integer);
+      var i : integer;
+      begin
+         write('{ ');
+         for i := 1 to m do
+             if parinktas[i] then
+                 write(i, ' ');
+         writeln('}');
+      end;
+
+      procedure generuok(k, n : integer);
+      { nagrinėjamas k-asis n elementų aibės narys }
+      var log : boolean;
+      begin
+         { jei k > n, tai ši procedūra iškviesta jau sugeneravus visą poaibį }
+         if k > n then
+             spausdink (k)
+         else
+             for log := false to true do begin
+                 parinktas[k] := log;
+                 generuok(k + 1, n);
+             end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = 20;
+
+      bool parinktas[MAXN];
+
+      void spausdink(int m) {
+          cout << "{";
+          for(int i = 0; i < m; i++) {
+              if(parinktas[i]) {
+                  cout << i << " ";
+              }
+          }
+          cout << "}" << endl;
+      }
+
+      void gen(int k, int n) {
+          if(k >= n) {
+              spausdink(n);
+              return;
+          }
+          for(int log = 0; log <= 1; log++) {
+              parinktas[k] = log;
+              gen(k+1, n);
+          }
+      }
+
 
 
 .. code-block:: unicode_cpp
@@ -711,10 +964,21 @@ visus įmanomus žodžius, kurių ilgis :math:`n` iš abėcėlės
 Norėdami gauti visus poaibius iš 4 elementų, į procedūrą
 ``generuok`` kreipiamės:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  n := 4;
-  generuok(1, n);
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      n := 4;
+      generuok(1, n);
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int n = 4;
+      gen(0, n);
 
 .. code-block:: unicode_cpp
 
@@ -805,37 +1069,74 @@ Pasinaudosime jau žinomu derinių generavimo algoritmu, kurį
 pritaikysime šio uždavinio sprendimui. Beje, sutarsime, kad sprendinys
 egzistuoja.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXH = 100; { maksimalus pakylos aukštis }
-  var s : array [1..2*MAXH] of integer;
-      P, H, V : integer;
+  .. tab:: Paskalis
 
-  procedure generuok(k : integer);
-  { generuoja sekos narį, kurio numeris k }
-  var i, max : integer;
-  begin
-      if k = 2*H then
-          { sugeneruoti visi nariai (paskutinis žinomas iš anksto) }
-          spausdink(2*H) { Procedūra spausdink analogiška spausdinimo
-                           procedūrai 5.1 skyrelyje. }
-      else if k = H+1 then begin
-          { (H+1)-osios pakopos viršūnės plotis fiksuotas }
-          s[k] := s[k-1]+V;
-          generuok(k+1);
-      end
-      else begin
-          { nagrinėjamos visos galimos k-ojo nario reikšmės }
-          if k <= H then
-              max := P-(2*H-k)-(V-1)
-          else
-              max := P-(2*H-k);
-          for i := s[k-1]+1 to max do begin
-              s[k] := i;
-              generuok(k+1);
-          end;
-      end;
-  end;
+    .. code-block:: unicode_pascal
+
+      const MAXH = 100; { maksimalus pakylos aukštis }
+      var s : array [1..2*MAXH] of integer;
+         P, H, V : integer;
+
+      procedure generuok(k : integer);
+      { generuoja sekos narį, kurio numeris k }
+      var i, max : integer;
+      begin
+         if k = 2*H then
+             { sugeneruoti visi nariai (paskutinis žinomas iš anksto) }
+             spausdink(2*H) { Procedūra spausdink analogiška spausdinimo
+                              procedūrai 5.1 skyrelyje. }
+         else if k = H+1 then begin
+             { (H+1)-osios pakopos viršūnės plotis fiksuotas }
+             s[k] := s[k-1]+V;
+             generuok(k+1);
+         end
+         else begin
+             { nagrinėjamos visos galimos k-ojo nario reikšmės }
+             if k <= H then
+                 max := P-(2*H-k)-(V-1)
+             else
+                 max := P-(2*H-k);
+             for i := s[k-1]+1 to max do begin
+                 s[k] := i;
+                 generuok(k+1);
+             end;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXH = 100;
+
+      int s[2*MAXH+1];
+      int P, H, V;
+
+      // generuoja sekos narį, kurio numeris k
+      void gen(int k) {
+          if (k == 2*H) {
+              spausdink(2*H);
+          } else if (k == H+1) {
+              // (H+1)-osios pakopos viršūnės plotis fiksuotas
+              s[k] = s[k-1] + V;
+              gen(k + 1);
+          } else {
+              // nagrinėjamos visos galimos k-ojo nario reikšmės
+
+              int mx;
+              if (k <= H)
+                  mx = P-(2*H-k)-(V-1);
+              else
+                  mx = P-(2*H-k);
+
+              for (int i = s[k-1]+1; i <= mx; i++) {
+                  s[k] = i;
+                  gen(k+1);
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -870,14 +1171,25 @@ egzistuoja.
 
 Į procedūrą ``generuok`` turi būti kreipiamasi tokiu būdu:
 
+.. tabs::
+
+  .. tab:: Paskalis
+
 .. code-block:: unicode_pascal
 
   S[1] := 0;
   S[2*H] := P;
   generuok(2);
 
+<<<<<<< HEAD
 .. code-block:: unicode_cpp
   
+=======
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+>>>>>>> 41989fd90e84fe292816da12600504379fcd97db
   // Funkcija gen() turi būti iškviečiama tokiu būdu:
   s[1] = 0
   s[2*H] = P;

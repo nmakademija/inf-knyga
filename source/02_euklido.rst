@@ -115,18 +115,36 @@ naudodamiesi Euklido algoritmu:
 
 Gavome :math:`DBD(12, 8) = 4`. Užrašysime Euklido algoritmą Paskalio ir C++ kalbomis.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function DBD(a, b : longint) : longint;
-    var c : longint;
-  begin
-    while b > 0 do begin
-      c := a;
-      a := b;
-      b := c mod b;
-    end;
-    DBD := a;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function DBD(a, b : longint) : longint;
+        var c : longint;
+      begin
+        while b > 0 do begin
+          c := a;
+          a := b;
+          b := c mod b;
+        end;
+        DBD := a;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      long long DBD(long long a, long long b) {
+          long long c;
+          while (b > 0) {
+              c = a;
+              a = b;
+              b = c % b;
+          }
+          return a;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -200,15 +218,27 @@ Kadangi Euklido algoritmas apibrėžiamas rekurentiniais sąryšiais:
 
 tai Euklido algoritmą nesunku užrašyti rekursyvia [#f7]_ funkcija:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function DBD(a, b : longint) : longint;
-  begin
-    if b = 0 then
-      DBD := a
-    else
-      DBD := DBD(b, a mod b);
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function DBD(a, b : longint) : longint;
+      begin
+        if b = 0 then
+          DBD := a
+        else
+          DBD := DBD(b, a mod b);
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      long long DBD(long long a, long long b) {
+          return b == 0 ? a : DBD(b, a%b);
+      }
 
 .. code-block:: unicode_cpp
 
@@ -238,12 +268,24 @@ daliklio.
 Euklido algoritmas leidžia efektyviai apskaičiuoti ir mažiausią
 bendrąjį kartotinį:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function MBK(a, b : longint) : longint;
-  begin
-    MBK := a * b div DBD(a, b);
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function MBK(a, b : longint) : longint;
+      begin
+        MBK := a * b div DBD(a, b);
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      long long MBK(long long a, long long b) {
+          return a / DBD(a,b) * b;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -270,12 +312,38 @@ Tarkime, masyve :math:`m` yra :math:`k` sveikųjų skaičių. Pateiksime
 fragmentą, randantį visų :math:`k` skaičių :math:`DBD` ir
 :math:`MBK`:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  visųDBD := 0; { po pirmo žingsnio taps lygiu m[1] }
-  for i := 1 to k do
-    visųDBD := DBD(abs(m[i]), visųDBD);
+  .. tab:: Paskalis
 
+    .. code-block:: unicode_pascal
+
+      visųDBD := 0; { po pirmo žingsnio taps lygiu m[1] }
+      for i := 1 to k do
+        visųDBD := DBD(abs(m[i]), visųDBD);
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int visųDBD = 0; // po pirmo žingsnio taps lygiu m[0]
+      for(int i = 0; i < n; i++) {
+          visųDBD = DBD(visųDBD, abs(m[i]));
+      }
+
+.. tabs::
+
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      visųMBK := 1; { po pirmo žingsnio taps lygiu m[1] }
+      for i := 1 to k do
+        visųMBK := MBK(abs(m[i]), visųMBK);
+
+  .. tab:: C++
+
+<<<<<<< HEAD
 .. code-block:: unicode_cpp
 
   int visuDBD = 0; // po pirmo žingsnio taps lygiu m[0]
@@ -284,10 +352,14 @@ fragmentą, randantį visų :math:`k` skaičių :math:`DBD` ir
   }
 
 .. code-block:: unicode_pascal
+=======
+    .. code-block:: cpp
+>>>>>>> 41989fd90e84fe292816da12600504379fcd97db
 
-  visųMBK := 1; { po pirmo žingsnio taps lygiu m[1] }
-  for i := 1 to k do
-    visųMBK := MBK(abs(m[i]), visųMBK);
+      int visųMBK = 1; // po pirmo žingsnio taps lygiu m[0]
+      for(int i = 0; i < n; i++) {
+          visųMBK = MBK(visųMBK, abs(m[i]));
+      }
 
 .. code-block:: unicode_cpp
 

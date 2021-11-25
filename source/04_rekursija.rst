@@ -82,15 +82,28 @@ Kitas pavyzdys – skaičiaus faktorialas:
 
 Galime parašyti skaičiaus faktorialą skaičiuojančią funkciją:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function fakt(n : integer) : longint;
-  begin
-      if n = 0 then
-          fakt := 1
-      else
-          fakt := n * fakt(n - 1);
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function fakt(n : integer) : longint;
+      begin
+          if n = 0 then
+              fakt := 1
+          else
+              fakt := n * fakt(n - 1);
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      long long fakt(int n) {
+          if(n == 0) return 1;
+          return n*fakt(n-1);
+      }
 
 .. code-block:: unicode_cpp
 
@@ -128,15 +141,28 @@ Fibonačio skaičiais. Juos taip pat galima skaičiuoti rekursyviai:
     F_n &=& F_{n–1} + F_{n–2}, \text{ jei } n > 2
   \end{eqnarray*}
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function F(n : integer) : longint;
-  begin
-      if n <= 2 then
-          F := 1
-      else
-          F := F(n - 1) + F(n - 2);
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function F(n : integer) : longint;
+      begin
+          if n <= 2 then
+              F := 1
+          else
+              F := F(n - 1) + F(n - 2);
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      long long F(int n) {
+          if(n <= 2) return 1;
+          return F(n-1) + F(n-2);
+      }
 
 .. code-block:: unicode_cpp
 
@@ -237,17 +263,32 @@ skaičius ir stiebų vardai), o vėliau – nuo B ant C. Kintamuosius
 taisykle, o jei :math:`n = 0`, nereikia atlikti nieko – rekursija
 baigiama.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  procedure kelk(n : integer; nuo, tarp, ant : char);
-  begin
-      if n > 0 then begin
-          kelk(n - 1, nuo, ant, tarp); { nuo → tarp }
-          { perkeliamas n-tasis diskas }
-          writeln(nuo, ' –> ', ant);
-          kelk(n - 1, tarp, nuo, ant) { tarp → ant }
-      end
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      procedure kelk(n : integer; nuo, tarp, ant : char);
+      begin
+          if n > 0 then begin
+              kelk(n - 1, nuo, ant, tarp); { nuo → tarp }
+              { perkeliamas n-tasis diskas }
+              writeln(nuo, ' –> ', ant);
+              kelk(n - 1, tarp, nuo, ant) { tarp → ant }
+          end
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      void kelk(int n, char nuo, char tarp, char ant) {
+          if(n == 0) return;
+          kelk(n-1, nuo, ant, tarp); //nuo -> tarp
+          cout << nuo << " -> " << ant << endl;
+          kelk(n-1, tarp, nuo, ant); // tarp -> ant
+      }
 
 .. code-block:: unicode_cpp
 

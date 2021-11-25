@@ -33,10 +33,21 @@ palyginti.
 Kad nekomplikuotume, algoritmus pateiksime rikiuodami skaičių masyvą
 didėjimo (nemažėjimo) tvarka:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = ...;   { maksimalus masyvo ilgis }
-  type masyvas = array [1..MAXN] of integer;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = ...;   { maksimalus masyvo ilgis }
+      type masyvas = array [1..MAXN] of integer;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...;
+      int a[MAXN];
 
 .. code-block:: unicode_cpp
 
@@ -69,23 +80,49 @@ dalį. Įterpimas atliekamas tokiu būdu: :math:`(k + 1)`-asis
 elementas įsimenamas, visi didesni už jį išrikiuotos masyvo dalies
 elementai paslenkami pirmyn, o šis įterpiamas į naują savo vietą.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  procedure rikiuok(const n : integer;
-                    var A : masyvas);
-  var i, k, t : integer;
-  begin
-      for k := 1 to n - 1 do begin
-          t := A[k + 1];
-          { skaičių t įterpsime į išrikiuotą masyvo dalį [1..k] }
-          i := k;
-          while (i > 0) and (A[i] > t) do begin
-              A[i + 1] := A[i];
-              i := i - 1;
-          end;
-          A[i + 1] := t;
-       end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      procedure rikiuok(const n : integer;
+                       var A : masyvas);
+      var i, k, t : integer;
+      begin
+         for k := 1 to n - 1 do begin
+             t := A[k + 1];
+             { skaičių t įterpsime į išrikiuotą masyvo dalį [1..k] }
+             i := k;
+             while (i > 0) and (A[i] > t) do begin
+                 A[i + 1] := A[i];
+                 i := i - 1;
+             end;
+             A[i + 1] := t;
+          end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      /*
+          Pastaba: kintamasis n ir masyvas a aprašytas globaliai
+          praeitame kodo pavyzdyje.
+      */
+
+      void rikiuok () {
+          for (int k = 0; k < n-1; k++) {
+              int t = a[k+1];
+              // Skaičių t terprsime į išrikiuotą masyvo dalį [1..k]
+              int i = k;
+              while (i > 0 && a[i] > t) {
+                  a[i+1] = a[i];
+                  i--;
+              }
+              a[i+1] = t;
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -154,37 +191,73 @@ ji grąžina dalijamojo elemento indeksą v (t. y. vietą, kurioje
 masyvo dalis perskiriama). Šios informacijos reikia rikiavimo
 algoritmui.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function perskirk(var A : masyvas;
-                    const k, d : integer) : integer;
+  .. tab:: Paskalis
 
-      procedure sukeisk(var x, y : integer);
-      var t : integer;
-      begin
-          t := x;
-          x := y;
-          y := t;
-      end;
+    .. code-block:: unicode_pascal
 
-  var x : integer; { dalijamoji reikšmė }
-      i, j : integer;
-  begin
-      x := A[k];
-      i := k - 1;
-      j := d + 1;
-      perskirk := 0;
-      while perskirk = 0 do begin { dalis dar neperskirta }
-          repeat { praleidžiami elementai, mažesni už x }
-              i := i + 1
-          until A[i] >= x;
-          repeat { praleidžiami elementai, didesni už x }
-              j := j - 1
-          until A[j] <= x;
-          if i < j then sukeisk(A[i], A[j])
-          else perskirk := j;
-      end;
-  end;
+      function perskirk(var A : masyvas;
+                       const k, d : integer) : integer;
+
+         procedure sukeisk(var x, y : integer);
+         var t : integer;
+         begin
+             t := x;
+             x := y;
+             y := t;
+         end;
+
+      var x : integer; { dalijamoji reikšmė }
+         i, j : integer;
+      begin
+         x := A[k];
+         i := k - 1;
+         j := d + 1;
+         perskirk := 0;
+         while perskirk = 0 do begin { dalis dar neperskirta }
+             repeat { praleidžiami elementai, mažesni už x }
+                 i := i + 1
+             until A[i] >= x;
+             repeat { praleidžiami elementai, didesni už x }
+                 j := j - 1
+             until A[j] <= x;
+             if i < j then sukeisk(A[i], A[j])
+             else perskirk := j;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      /*
+          Pastaba: masyvas a aprašytas globaliai
+          viename iš praeitų kodo pavyzdžių.
+      */
+
+      int perskirk (int k, int d) {
+          int x = a[k]; // dalijamoji reikšmė
+          int i = k-1;
+          int j = d+1;
+          int rez = 0; // grąžinamas rezultatas
+          while (rez == 0) {
+              do { // praleidžiami elementai, mažesni už x
+                  i++;
+              } while (a[i] >= x);
+
+              do { // praleidžiami elementai, didesni už x
+                  j--;
+              } while (a[i] <= x);
+
+              if (i < j)
+                  swap(a[i], a[j]);
+              else
+                  rez = j;
+          }
+
+          return rez;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -234,22 +307,47 @@ detalių ir ją programuoti reikia labai atidžiai.
 
 Dabar nesunku užrašyti greitojo rikiavimo algoritmą:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  procedure rikiuok(var A : masyvas;
-                    const k, d : integer);
-  var v : integer;
-  begin
-      if k < d then begin
-          v := perskirk(A, k, d);
-          { rekursyviai išrikiuojamos kairioji ir dešinioji masyvo dalys }
-          rikiuok(A, k, v);
-          rikiuok(A, v + 1, d);
-      end;
-  end;
+  .. tab:: Paskalis
 
-Norint surikiuoti :math:`n` elementų seką :math:`A`, į procedūrą
-kreipiamasi ``rikiuok (A, 1, n);``
+    .. code-block:: unicode_pascal
+
+      procedure rikiuok(var A : masyvas;
+                       const k, d : integer);
+      var v : integer;
+      begin
+         if k < d then begin
+             v := perskirk(A, k, d);
+             { rekursyviai išrikiuojamos kairioji ir dešinioji masyvo dalys }
+             rikiuok(A, k, v);
+             rikiuok(A, v + 1, d);
+         end;
+      end;
+
+    Norint surikiuoti :math:`n` elementų seką :math:`A`, į procedūrą
+    kreipiamasi ``rikiuok (A, 1, n);``
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      /*
+          Pastaba: kintamasis n ir masyvas a aprašytas globaliai
+          viename iš praeitų kodo pavyzdžių.
+      */
+
+      void rikiuok (int k, int d) {
+          if (k < d) {
+              int v = perskirk(k, d);
+              // rekursyviai išrikiuojamos kairioji ir dešinioji masyvo dalys
+              rikiuok (k, v);
+              rikiuok (v+1, d);
+          }
+      }
+
+  // Norint surikiuoti n elementų seką a, kviečiama funkcija:
+  rikiuok (0, n-1);
 
 .. code-block:: unicode_cpp
 
@@ -323,31 +421,64 @@ pasinaudoti šia informacija ir elementus surašyti atgal į masyvą
 :math:`O(n)` (tiesinis), o jam reikalinga papildoma atmintis priklauso
 nuo aibės, kuriai priklauso rikiuojamo masyvo elementai, dydžio.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  const MAXN = ...;   { maksimalus masyvo ilgis }
-  type skaičius = 1..1000;
-       masyvas = array [1..MAXN] of skaičius;
-       intMasyvas = array [skaičius] of integer;
-  procedure rikiuok(const n : integer;
-                    var A : masyvas);
-  var c : intMasyvas;
-      i, j : longint;
-  begin
-      { suskaičiuojama, kiek kokių elementų yra masyve A }
-      for i := low(C) to high(C) do
-          C[i] := 0;
-      for i := 1 to n do
-          C[A[i]] := C[A[i]] + 1;
-      { visi n masyvo A elementų surašomi iš eilės }
-      j := low(C);
-      for i := 1 to n do begin
-          while C[j] = 0 do
-              j := j + 1;
-          C[j] := C[j] - 1;
-          A[i] := j;
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      const MAXN = ...;   { maksimalus masyvo ilgis }
+      type skaičius = 1..1000;
+          masyvas = array [1..MAXN] of skaičius;
+          intMasyvas = array [skaičius] of integer;
+      procedure rikiuok(const n : integer;
+                       var A : masyvas);
+      var c : intMasyvas;
+         i, j : longint;
+      begin
+         { suskaičiuojama, kiek kokių elementų yra masyve A }
+         for i := low(C) to high(C) do
+             C[i] := 0;
+         for i := 1 to n do
+             C[A[i]] := C[A[i]] + 1;
+         { visi n masyvo A elementų surašomi iš eilės }
+         j := low(C);
+         for i := 1 to n do begin
+             while C[j] = 0 do
+                 j := j + 1;
+             C[j] := C[j] - 1;
+             A[i] := j;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...; // maksimalus masyvo ilgis
+      const int MAXS = ...; // maksimali sekos nario reikšmė
+
+      int n;
+      int a[MAXN];
+      int c[MAXS+1]; // c[i] nurodys, kiek sekoje yra skaičių i
+
+      void rikiuok () {
+          // suskaičiuojama, kiek kokių elementų yra masyve a
+          for (int i = 0; i <= MAXS; i++)
+              c[i] = 0;
+          for (int i = 0; i < n; i++)
+              c[a[i]]++;
+
+          // visi n masyvo a elementų surašomi iš eilės
+          int j = 0;
+          for (int i = 0; i < n; i++) {
+              while (c[j] == 0) {
+                  j++;
+              }
+              c[j]--;
+              a[i] = j;
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -399,20 +530,39 @@ masyvo elementus – vadinamas **tiesine paieška** (angl. *Linear
 search*). Patikrinimą, ar :math:`n` ilgio masyve :math:`A` yra
 elementas :math:`x`, atlieka tokia funkcija:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function ieškok (const n, x: integer;
-                   var A: masyvas): integer;
-  var j: integer;
-  begin
-      j := 1;
-      while (A[j] <> x) and (j < n) do
-          j := j + 1;
-      if A[j] = x then
-          ieškok := j
-      else
-          ieškok := 0; { elementas nerastas }
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function ieškok (const n, x: integer;
+                      var A: masyvas): integer;
+      var j: integer;
+      begin
+         j := 1;
+         while (A[j] <> x) and (j < n) do
+             j := j + 1;
+         if A[j] = x then
+             ieškok := j
+         else
+             ieškok := 0; { elementas nerastas }
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      const int MAXN = ...; // maksimalus sekos ilgis
+      int n, x;
+      int a[MAXN];
+
+      int ieskok () {
+          for (int i = 0; i < n; i++)
+              if (a[i] == x)
+                  return i;
+          return -1; // elementas nerastas
+      }
 
 .. code-block:: unicode_cpp
 
@@ -462,26 +612,48 @@ Aprašytąjį algoritmą nesudėtinga užrašyti rekursyvia funkcija.
 Nesėkmingos paieškos atveju ši funkcija grąžins nulį, o sėkmingos
 – ieškomo elemento indeksą masyve.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function ieškok(x, k, d : integer;
-                  var A : masyvas) : integer;
-  var v : integer;
-  begin
-      if k > d then
-          ieškok := 0
-      else begin
-          v := (k + d) div 2;
-          { pagal vidurinį masyvo dalies elementą toliau ieškoma
-            kairiojoje arba dešiniojoje masyvo dalyje }
-          if A[v] > x then
-              ieškok := ieškok(x, k, v - 1, A)
-          else if A[v] < x then
-              ieškok := ieškok(x, v + 1, d, A)
-          else { trečiuoju atveju A[v] = x (elementas rastas) }
-              ieškok := v;
-      end;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function ieškok(x, k, d : integer;
+                     var A : masyvas) : integer;
+      var v : integer;
+      begin
+         if k > d then
+             ieškok := 0
+         else begin
+             v := (k + d) div 2;
+             { pagal vidurinį masyvo dalies elementą toliau ieškoma
+               kairiojoje arba dešiniojoje masyvo dalyje }
+             if A[v] > x then
+                 ieškok := ieškok(x, k, v - 1, A)
+             else if A[v] < x then
+                 ieškok := ieškok(x, v + 1, d, A)
+             else { trečiuoju atveju A[v] = x (elementas rastas) }
+                 ieškok := v;
+         end;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      int binSearch(int x, vector<int> arr) {
+          int lo = 0, hi = masyvas.size()-1;
+          // ieskome intervale [0, n-1]
+          while (lo < hi) {
+              int mid = (lo+hi)/2;
+              if (arr[mid] < x) {
+                  lo = mid+1;
+              } else {
+                  hi = mid;
+              }
+          }
+          return mid;
+      }
 
 .. code-block:: unicode_cpp
 

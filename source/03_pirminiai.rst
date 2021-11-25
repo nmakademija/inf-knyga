@@ -87,19 +87,38 @@ Apibendrinę šiuos pastebėjimus, galime parašyti pakankamai spartų
 (:math:`O(\sqrt{n}`) sudėtingumo) algoritmą, tikrinantį, ar skaičius
 :math:`n > 1` pirminis.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function pirminis(n : longint) : boolean;
-  var d,            { potencialus daliklis }
-      sn : longint; { riba, iki kurios ieškosime daliklių }
-  begin
-    pirminis := (n mod 2 <> 0) or (n = 2);
-    sn := round(sqrt(n) + 1);
-    d := 3;         { tikrinsime dalumą iš nelyginių skaičių }
-    while pirminis and (d < sn) do
-      if n mod d = 0 then pirminis := false
-      else d := d + 2;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function pirminis(n : longint) : boolean;
+      var d,            { potencialus daliklis }
+          sn : longint; { riba, iki kurios ieškosime daliklių }
+      begin
+        pirminis := (n mod 2 <> 0) or (n = 2);
+        sn := round(sqrt(n) + 1);
+        d := 3;         { tikrinsime dalumą iš nelyginių skaičių }
+        while pirminis and (d < sn) do
+          if n mod d = 0 then pirminis := false
+          else d := d + 2;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      bool pirminis(long long n) {
+          if(n == 1) return false;
+          if(n == 2) return true;
+          if(n%2 == 0) return false;
+
+          for(int d = 3; d*d <= n; d+=2) {
+              if(n%d == 0) return false;
+          }
+          return true;
+      }
 
 .. code-block:: unicode_cpp
 
@@ -199,18 +218,39 @@ pirminiai skaičiai, ne didesni už 25, ir vienetas.
 Dabar užrašykime algoritmą Paskalio kalba. Skaičių eilę vaizduosime
 loginiu masyvu pirm.
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  for k := 2 to n do
-    pirm[k] := true;
-  for k := 2 to round(sqrt(n) + 1) do
-    if pirm[k] then begin
-      j := 2 * k;
-      while (j <= n) do begin
-        pirm[j] := false;
-        j := j + k;
-      end;
-    end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      for k := 2 to n do
+        pirm[k] := true;
+      for k := 2 to round(sqrt(n) + 1) do
+        if pirm[k] then begin
+          j := 2 * k;
+          while (j <= n) do begin
+            pirm[j] := false;
+            j := j + k;
+          end;
+        end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      bool arPirminis[MAXN];
+
+      void rėtis(int n) {
+          fill(arPirminis+2, arPirminis+n+1, true); // arPirminis[2] = arPirminis[3] = ... = arPirminis[n] = true
+          for(int i = 2; i*i <= n; i++) {
+              if(arPirminis[i]) {
+                  for(int j = 2*i; j <= n; j+=i) {
+                      arPirminis[j] = false;
+                  }
+              }
+          }
+      }
 
 .. code-block:: unicode_cpp
 
@@ -249,21 +289,37 @@ Tarkime, visi pirminiai skaičiai iki :math:`\sqrt{2^{31}}` iš eilės
 surašyti masyve ``p``. Tuomet ankstesnę patikrinimo, ar skaičius
 pirminis, funkciją galime pakeisti spartesne:
 
-.. code-block:: unicode_pascal
+.. tabs::
 
-  function pirminis(n : longint) : boolean;
-  var i,            { masyvo p indeksas }
-      sn : longint; { riba, iki kurios ieškosime daliklių }
-  begin
-    pirminis := true;
-    sn := round(sqrt(n) + 1);
-    i := 1;
-    while pirminis and (p[i] < sn) do
-      if n mod p[i] = 0 then
-        pirminis := false
-      else
-        i := i + 1;
-  end;
+  .. tab:: Paskalis
+
+    .. code-block:: unicode_pascal
+
+      function pirminis(n : longint) : boolean;
+      var i,            { masyvo p indeksas }
+          sn : longint; { riba, iki kurios ieškosime daliklių }
+      begin
+        pirminis := true;
+        sn := round(sqrt(n) + 1);
+        i := 1;
+        while pirminis and (p[i] < sn) do
+          if n mod p[i] = 0 then
+            pirminis := false
+          else
+            i := i + 1;
+      end;
+
+  .. tab:: C++
+
+    .. code-block:: cpp
+
+      vector<int> primes; // visi pirminiai skaiciai iki sqrt(n)
+      bool pirminis(long long n) {
+          for(int i = 0; primes[i]*primes[i] <= n; i++) {
+              if(n%primes[i] == 0) return false;
+          }
+          return true;
+      }
 
 .. code-block:: unicode_cpp
 
