@@ -226,10 +226,11 @@ loginiu masyvu pirm.
 
     .. code-block:: cpp
 
-      bool arPirminis[MAXN];
+      std::vector<bool> arPirminis(MAXN, true);
 
       void rėtis(int n) {
-          fill(arPirminis+2, arPirminis+n+1, true); // arPirminis[2] = arPirminis[3] = ... = arPirminis[n] = true
+          arPirminis.at(0) = false;
+          arPirminis.at(1) = false;
           for(int i = 2; i*i <= n; i++) {
               if(arPirminis[i]) {
                   for(int j = 2*i; j <= n; j+=i) {
