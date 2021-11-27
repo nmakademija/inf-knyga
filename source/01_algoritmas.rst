@@ -412,7 +412,7 @@ Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
                   j++;
                   int suma = 0;
                   for (int l = i; l <= j; l++) {
-                      suma += a[l];
+                      suma += a.at(l);
                   }
                   rasta = (suma == k);
               } while (j < n-1 && !rasta);
