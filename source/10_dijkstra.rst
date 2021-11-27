@@ -272,6 +272,8 @@ vaizduojamas kaimynystės matrica.
 
   .. tab:: C++
 
+    Kodas analogiškas Paskalio kalba užrašytam variantui:
+
     .. code-block:: cpp
 
       int atstumas[MAXN];
@@ -314,9 +316,9 @@ vaizduojamas kaimynystės matrica.
 
   .. tab:: Idiomatinis C++
 
-    .. code-block:: cpp
+    Dijkstros algoritmo realizacija panaudojant `priority_queue`:
 
-      // Dijkstros algoritmo realizacija su priority_queue
+    .. code-block:: cpp
 
       vector<pair<int, int>> adj[MAXN];
       /*
