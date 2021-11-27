@@ -274,12 +274,6 @@ vaizduojamas kaimynystės matrica.
 
     .. code-block:: cpp
 
-      /*
-          Pastaba: pirmiau pateikiamas C++ kodas, analogiškas Paskalio kalba užrašytam kodui.
-          Žemiau jo galite rasti efektyvią Dijkstros algoritmo realizaciją,
-          kuri naudoja duomenų struktūrą priority_queue
-      */
-
       int atstumas[MAXN];
       int pirmine[MAXN];
       bool prijungta[MAXN];
@@ -318,7 +312,9 @@ vaizduojamas kaimynystės matrica.
           }
       }
 
+  .. tab:: Idiomatinis C++
 
+    .. code-block:: cpp
 
       // Dijkstros algoritmo realizacija su priority_queue
 
