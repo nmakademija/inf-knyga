@@ -399,6 +399,8 @@ Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
 
   .. tab:: C++
 
+    C++ kodas atitinkantis Pascal:
+
     .. code-block:: cpp
 
       bool rasta = false;
