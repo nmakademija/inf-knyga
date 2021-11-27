@@ -408,19 +408,22 @@ Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
       do {
           int j = i;
           i++;
-              do {
-                  j++;
-                  int suma = 0;
-                  for (int l = i; l <= j; l++) {
-                      suma += a.at(l);
-                  }
-                  rasta = (suma == k);
-              } while (j < n-1 && !rasta);
+          do {
+              j++;
+              int suma = 0;
+              for (int l = i; l <= j; l++) {
+                  suma += a.at(l);
+              }
+              rasta = (suma == k);
+          } while (j < n-1 && !rasta);
       } while (i < n-1 && !rasta);
 
   .. tab:: Idiomatinis C++
+
     Labiau idiomatinis C++ kodas:
+
     .. code-block:: cpp
+
       bool rasta = false;
       int atsPr, atsPab;
       for(int i = 0; i < n && !rasta; i++) {
@@ -436,6 +439,7 @@ Pats paprasčiausias būdas – perrinkti visas galimas indeksų :math:`i` ir
               }
           }
       }
+
 Jei algoritmui baigus darbą kintamojo rasta reikšmė bus lygi true, tai
 :math:`i` ir :math:`j` bus ieškomi indeksai. Suskaičiavę, kiek elementarių
 veiksmų blogiausiu atveju atlieka algoritmas, pamatytume, kad greičiausiai
