@@ -934,20 +934,20 @@ egzistuoja.
 
   .. tab:: Paskalis
 
-.. code-block:: unicode_pascal
+    .. code-block:: unicode_pascal
 
-  S[1] := 0;
-  S[2*H] := P;
-  generuok(2);
+      S[1] := 0;
+      S[2*H] := P;
+      generuok(2);
 
   .. tab:: C++
 
     .. code-block:: cpp
 
-  // Funkcija gen() turi būti iškviečiama tokiu būdu:
-  s[1] = 0
-  s[2*H] = P;
-  gen(2);
+      // Funkcija gen() turi būti iškviečiama tokiu būdu:
+      s[1] = 0
+      s[2*H] = P;
+      gen(2);
 
 Perrinkimo optimizavimas
 ========================
